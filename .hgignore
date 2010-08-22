@@ -2,6 +2,8 @@
 syntax: glob
 
 conf/config.php
+tmp/cache/*
+tmp/smarty_c/*
 
 # use regexp syntax.
 syntax: regexp
