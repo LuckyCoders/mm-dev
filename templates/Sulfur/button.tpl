@@ -1,0 +1,1 @@
+<div><a class="button" style="width:{$bwidth}px;" href="{$blink}">{$btext}</a></div>

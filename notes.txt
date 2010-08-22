@@ -1,0 +1,10 @@
+NOTES:
+
+makebutton(text, 'link', width);
+------>
+{include file='button.tpl' btext= blink= bwidth=}
+
+ex.:
+makebutton($lang_login['not_registrated'], 'register.php" type="wrn', 130);
+------>
+{include file='button.tpl' btext=$lang_login.not_registrated blink='register.php" type="wrn' bwidth=130}

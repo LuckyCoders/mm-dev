@@ -1,0 +1,8 @@
+# use glob syntax.
+syntax: glob
+
+conf/config.php
+
+# use regexp syntax.
+syntax: regexp
+
