@@ -1982,7 +1982,7 @@ $lang_honor = array(
   'race' => 'Race',
   'class' => 'Class',
   'level' => 'Level',
-  'honor points' => 'Honor Points',
+  'honor_points' => 'Honor Points',
   'honor' => 'Rank',
   'guild' => 'Guild'
   );
