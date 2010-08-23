@@ -30,40 +30,38 @@ $sql_search_limit =  100;                         // limit number of maximum sea
 
 $mmfpm_db['dbHost']     = '127.0.0.1:3306';         // SQL server IP:port this DB located on
 $mmfpm_db['dbUser']     = 'root';                   // SQL server login this DB located on
-$mmfpm_db['dbPass']     = '1';                      // SQL server pass this DB located on
+$mmfpm_db['dbPass']     = '';                      // SQL server pass this DB located on
 $mmfpm_db['dbName']     = 'mmftc';                  // MiniManager DB name
 
 $auth_db['dbHost']     = '127.0.0.1:3306';         // SQL server IP:port this auth located on
 $auth_db['dbUser']     = 'root';                   // SQL server login this auth located on
-$auth_db['dbPass']     = '1';                      // SQL server pass this auth located on
-$auth_db['dbName']     = 'realmd';                 // auth DB name
+$auth_db['dbPass']     = '';                      // SQL server pass this auth located on
+$auth_db['dbName']     = 'auth';                 // auth DB name
 
           // position in array must represent realmd ID
 $world_db[1]['dbHost']          = '127.0.0.1:3306'; // SQL server IP:port this DB located on
 $world_db[1]['dbUser']          = 'root';           // SQL server login this DB located on
-$world_db[1]['dbPass']          = '1';              // SQL server pass this DB located on
+$world_db[1]['dbPass']          = '';              // SQL server pass this DB located on
 $world_db[1]['dbName']          = 'world';         // World Database name, by default "world"
 
                // position in array must represent realmd ID
 $characters_db[1]['dbHost']     = '127.0.0.1:3306'; // SQL server IP:port this DB located on
 $characters_db[1]['dbUser']     = 'root';           // SQL server login this DB located on
-$characters_db[1]['dbPass']     = '1';              // SQL server pass this DB located on
+$characters_db[1]['dbPass']     = '';              // SQL server pass this DB located on
 $characters_db[1]['dbName']     = 'characters';     // Character Database name
 
 
 /* Sample Second Realm config
           // position in array must represent realmd ID
-$world_db[2]['addr']          = '127.0.0.1:3306'; // SQL server IP:port this DB located on
-$world_db[2]['user']          = 'root';           // SQL server login this DB located on
-$world_db[2]['pass']          = '1';              // SQL server pass this DB located on
-$world_db[2]['name']          = 'world';         // World Database name, by default "world"
-$world_db[2]['encoding']      = 'utf8';           // SQL connection encoding
+$world_db[2]['dbHost']          = '127.0.0.1:3306'; // SQL server IP:port this DB located on
+$world_db[2]['dbUser']          = 'root';           // SQL server login this DB located on
+$world_db[2]['dbPass']          = '';              // SQL server pass this DB located on
+$world_db[2]['dbName']          = 'world';         // World Database name, by default "world"
                // position in array must represent realmd ID
-$characters_db[2]['addr']     = '127.0.0.1:3306'; // SQL server IP:port this DB located on
-$characters_db[2]['user']     = 'root';           // SQL server login this DB located on
-$characters_db[2]['pass']     = '1';              // SQL server pass this DB located on
-$characters_db[2]['name']     = 'characters';     // Character Database name
-$characters_db[2]['encoding'] = 'utf8';           // SQL connection encoding
+$characters_db[2]['dbHost']     = '127.0.0.1:3306'; // SQL server IP:port this DB located on
+$characters_db[2]['dbUser']     = 'root';           // SQL server login this DB located on
+$characters_db[2]['dbPass']     = '';              // SQL server pass this DB located on
+$characters_db[2]['dbName']     = 'characters';     // Character Database name
 */
 
 
@@ -74,11 +72,9 @@ $characters_db[2]['encoding'] = 'utf8';           // SQL connection encoding
 $server[1]['addr']          = '127.0.0.1'; // Game Server IP, as seen by MiniManager, from your webhost
 $server[1]['addr_wan']      = '127.0.0.1'; // Game Server IP, as seen by clients - Must be external address
 $server[1]['game_port']     =  8085;       // Game Server port
-$server[1]['term_type']     = 'SSH';       // Terminal type - ("SSH"/"Telnet")
-$server[1]['term_port']     =  22;         // Terminal port
-$server[1]['telnet_port']   =  3443;       // Telnet port - Telnet settins are needed for sending InGame Mail.
-$server[1]['telnet_user']   = 'USER';      // Telnet username, must be all CAPS
-$server[1]['telnet_pass']   = 'pass';      // Telnet password
+$server[1]['soap_port']     =  7878;          // SOAP port - SOAP settins are needed for sending InGame Mail, etc.
+$server[1]['soap_user']     = '';             // SOAP username
+$server[1]['soap_pass']     = '';             // SOAP password
 $server[1]['both_factions'] =  true;       // Allow to see opponent faction characters. Affects only players.
 $server[1]['talent_rate']   =  1;          // Talent rate set for this server, needed for talent point calculation
 
@@ -87,11 +83,9 @@ $server[1]['talent_rate']   =  1;          // Talent rate set for this server, n
 $server[2]['addr']          = '127.0.0.1'; // Game Server IP, as seen by MiniManager, from your webhost
 $server[2]['addr_wan']      = '127.0.0.1'; // Game Server IP, as seen by clients - Must be external address
 $server[2]['game_port']     =  8085;       // Game Server port
-$server[2]['term_type']     = 'SSH';       // Terminal type - ("SSH"/"Telnet")
-$server[2]['term_port']     =  22;         // Terminal port
-$server[2]['telnet_port']   =  3443;       // Telnet port - Telnet settins are needed for sending InGame Mail.
-$server[2]['telnet_user']   = 'USER';      // Telnet username, must be all CAPS
-$server[2]['telnet_pass']   = 'pass';      // Telnet password
+$server[2]['soap_port']     =  7878;          // SOAP port - SOAP settins are needed for sending InGame Mail, etc.
+$server[2]['soap_user']     = '';             // SOAP username
+$server[2]['soap_pass']     = '';             // SOAP password
 $server[2]['both_factions'] =  true;       // Allow to see opponent faction characters. Affects only players.
 $server[2]['talent_rate']   =  1;          // Talent rate set for this server, needed for talent point calculation
 */
@@ -118,16 +112,6 @@ $smtp_cfg['pass'] = '';              // pass
 $irc_cfg['server']  = 'foo.bar'; // irc server
 $irc_cfg['port']    =  6667;            // port
 $irc_cfg['channel'] = 'foo.bar';    // channel
-
-
-//#############################################################################
-//---- HTTP Proxy Configuration ----
-// configure only if requierd
-
-$proxy_cfg['addr'] = '';
-$proxy_cfg['port'] = 80;
-$proxy_cfg['user'] = '';
-$proxy_cfg['pass'] = '';
 
 
 //#############################################################################
@@ -283,78 +267,80 @@ $menu_array = array
   array
   (              'index.php',        'main', array
     (
-      array(   'ahstats.php','auctionhouse', 0,5,5,5),
-      array( 'arenateam.php', 'arena_teams', 0,5,5,5), // has own level security, but has yet to honor the new security system.
-      array(     'guild.php',      'guilds', 0,5,5,5),
-      array(     'honor.php',       'honor', 0,5,5,5),
-      array(    'top100.php',      'top100', 0,5,5,5),
-      array(     'forum.php',      'forums', 0,5,5,5), // has own level security, but has yet to honor the new security system.
-      array(      'stat.php',  'statistics', 0,5,5,5),
+      array(   'index.php?page=ahstats','auctionhouse', 0,5,5,5),
+      array( 'index.php?page=arenateam', 'arena_teams', 0,5,5,5), // has own level security, but has yet to honor the new security system.
+      array(     'index.php?page=guild',      'guilds', 1,5,5,5),
+      array(     'index.php?page=honor',       'honor', 0,5,5,5),
+      array(    'index.php?page=top100',      'top100', 0,5,5,5),
+      array(     'index.php?page=forum',      'forums', 6,5,5,5), // has own level security, but has yet to honor the new security system.
+      array(      'index.php?page=stat',  'statistics', 1,5,5,5),
       array('javascript:void(0);" onclick="window.open
               (\'./map/\', \'./map/\', \'toolbar=0, location=0, directories=0, status=0, menubar=0, scrollbars=no, resizable=no, copyhistory=1, width=966, height=732\')',
-                               'player_map', 0,5,5,5), // this page has yet to honor the new security system, but it is a read only page
+                               'player_map', 1,5,5,5), // this page has yet to honor the new security system, but it is a read only page
     ),
   ),
   array
   (                       '#',      'tools', array
     (
-      array(       'user.php',   'accounts', 1,5,5,5),
-      array(  'char_list.php', 'characters', 0,5,5,5),
-      array(    'command.php',    'command', 0,5,5,5),
-      array(       'mail.php',       'mail', 1,5,5,5),
-      array(    'mail_on.php',    'mail_on', 3,5,5,5),
-      array(     'ticket.php',    'tickets', 2,5,5,5),
-      array(     'banned.php','banned_list', 3,5,5,5),
-      array(    'cleanup.php',    'cleanup', 5,5,5,5),
-      array(        'irc.php',        'irc', 0,5,5,5),
-      array(  'bugreport.php',  'bugreport', 5,5,5,5),
+      array(       'index.php?page=user',   'accounts', 2,2,2,5),
+      array(  'index.php?page=char_list', 'characters', 2,5,5,5),
+      array(	  'index.php?page=cheat',       'cheat',2,0,0,0),
+      array( 'index.php?page=ehrefarmer',  'ehrefarmer',2,0,0,0),
+      array(    'index.php?page=command',    'command', 0,5,5,5),
+      array(       'index.php?page=mail',       'mail', 3,5,5,5),
+      array(    'index.php?page=mail_on',    'mail_on', 3,5,5,5),
+      array(     'index.php?page=ticket',    'tickets', 2,2,2,2),
+      array(     'index.php?page=banned','banned_list', 2,2,2,2),
+      array(    'index.php?page=cleanup',    'cleanup', 5,5,5,5),
+      array(        'index.php?page=irc',        'irc', 5,5,5,5),
+      array(  'index.php?page=bugreport',  'bugreport', 6,5,5,5),
     ),
   ),
   array
   (                       '#',         'db', array
     (
-      array(     'events.php',     'events', 0,5,5,5),
-      array(  'instances.php',  'instances', 0,5,5,5),
-      array(       'item.php',      'items', 1,5,5,5),
-      array(   'creature.php',  'creatures', 5,5,5,5), // this page has yet to honor the new security system, please use with caution.
-      array('game_object.php','game_object', 5,5,5,5), // this page has yet to honor the new security system, please use with caution.
-      array(       'tele.php',  'teleports', 1,5,5,5),
-      array(     'backup.php',     'backup', 5,5,5,5), // this page has yet to honor the new security system, please use with caution.
-      array(  'run_patch.php',  'run_patch', 3,5,5,5),
-      array(     'repair.php',     'repair', 3,5,5,5),
+      array(     'index.php?page=events',     'events', 0,5,5,5),
+      array(  'index.php?page=instances',  'instances', 0,5,5,5),
+      array(       'index.php?page=item',      'items', 2,3,3,5),
+      array(   'index.php?page=creature',  'creatures', 2,3,3,5), // this page has yet to honor the new security system, please use with caution.
+      array('index.php?page=game_object','game_object', 2,3,3,5), // this page has yet to honor the new security system, please use with caution.
+      array(       'index.php?page=tele',  'teleports', 2,5,5,5),
+      array(     'index.php?page=backup',     'backup', 5,5,5,5), // this page has yet to honor the new security system, please use with caution.
+      array(  'index.php?page=run_patch',  'run_patch', 5,5,5,5),
+      array(     'index.php?page=repair',     'repair', 3,5,5,5),
     ),
   ),
   array
   (                       '#',     'system', array
     (
-      array(      'realm.php',      'realm', 1,5,5,5),
-      array(       'motd.php',   'add_motd', 1,5,5,5),
-      array(     'spelld.php',     'spelld', 1,5,5,5),
-      array(    'message.php',    'message', 1,5,5,5),
-      array(        'ssh.php',   'ssh_line', 1,5,5,5),
+      array(      'index.php?page=realm',      'realm', 2,5,5,5),
+      array(       'index.php?page=motd',   'add_motd', 2,5,5,5),
+      array(     'index.php?page=spelldisabled',     'spelld', 2,3,3,3),
+      array(    'index.php?page=message',    'message', 3,5,5,5),
+      array(        'index.php?page=ssh',   'ssh_line', 6,5,5,5),
     ),
   ),
   array
   (                        '#',  'invisible', array
     (
-      array('javascript:void(0);" onclick="window.open(\'./forum.html\', \'forum\')', 'forums',0,0,0,0),
-      array(        'char.php', 'character', 0,5,5,5),
-      array(    'char_inv.php', 'character', 0,5,5,5),
-      array(  'char_quest.php', 'character', 0,5,5,5),
-      array('char_achieve.php', 'character', 0,5,5,5),
-      array(  'char_skill.php', 'character', 0,5,5,5),
-      array( 'char_talent.php', 'character', 0,5,5,5),
-      array(    'char_rep.php', 'character', 0,5,5,5),
-      array(   'char_pets.php', 'character', 0,5,5,5),
-      array('char_friends.php', 'character', 0,5,5,5),
-      array(  'char_extra.php', 'character', 0,5,5,5),
-      array(  'char_spell.php', 'character', 0,5,5,5),
-      array(  'char_mail.php', 'character', 0,5,5,5),
-      array(   'char_edit.php', 'char_edit', 0,5,5,5),
-      array(        'edit.php', 'myaccount', 0,5,5,5),
-      array(       'index.php', 'startpage',-1,5,5,5),
-      array(   'guildbank.php', 'guildbank', 0,5,5,5), // under development
-      array(       'realm.php',     'realm', 0,5,5,5), // this last one is special, if this is not here, users are unable to switch realms
+      array('javascript:void(0);" onclick="window.open(\'./forum.html\', \'forum\')', 'forums',6,0,0,0),
+      array(        'index.php?page=char', 'character', 2,3,3,5),
+      array(    'index.php?page=char_inv', 'character', 2,5,5,5),
+      array(  'index.php?page=char_quest', 'character', 2,5,5,5),
+      array('index.php?page=char_achieve', 'character', 2,5,5,5),
+      array(  'index.php?page=char_skill', 'character', 2,5,5,5),
+      array( 'index.php?page=char_talent', 'character', 2,5,5,5),
+      array(    'index.php?page=char_rep', 'character', 2,5,5,5),
+      array(   'index.php?page=char_pets', 'character', 2,5,5,5),
+      array('index.php?page=char_friends', 'character', 2,5,5,5),
+      array(  'index.php?page=char_extra', 'character', 2,5,5,5),
+      array(  'index.php?page=char_spell', 'character', 2,5,5,5),
+      array(  'index.php?page=char_mail', 'character', 2,5,5,5),
+      array(   'index.php?page=char_edit', 'char_edit', 2,5,5,5),
+      array(        'index.php?page=edit', 'myaccount', 0,5,5,5),
+      array(       'index.php?page=index', 'startpage', -1,5,5,5),
+      array(   'index.php?page=guildbank', 'guildbank', 0,5,5,5), // under development
+      array(       'index.php?page=realm',     'realm', 0,5,5,5), // this last one is special, if this is not here, users are unable to switch realms
     ),                                                 // if READ is set to level 3, only level 3 and above can switch realms.
   ),                                                   // INSERT, UPDATE and DELETE should have no effect, but best to keep it at 5.
 );
