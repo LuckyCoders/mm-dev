@@ -56,7 +56,7 @@ function events()
         if ($hours)
             $event_duration .= $hours.' hours';
             
-        $event_data[] = array("description" => $events->description, "start_time" => $events->start_time,"occurance" => $event_occurance, "duration" => $event_duration);
+        $event_data[] = array("description" => $events->description, "start_time" => $events->start_time, "occurance" => $event_occurance, "duration" => $event_duration);
     }
     $smarty->assign('event_data', $event_data);
 

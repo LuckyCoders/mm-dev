@@ -176,8 +176,10 @@
     // given IP, returns array('code','country')
     // 'code' is country code, 'country' is country name.
 
-    function misc_get_country_by_ip($ip, &$sqlm)
+    function misc_get_country_by_ip($ip)
     {
+        global $sqlm;
+        
         $country = $sqlm->fetch("SELECT c.code, c.country FROM ip2nationCountries c, ip2nation i WHERE i.ip < INET_ATON(\"%s\") AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", $ip);
 
         return array("code" => $country[0]->code, "country" => $country[0]->country);
@@ -189,10 +191,12 @@
     // given account ID, returns array('code','country')
     // 'code' is country code, 'country' is country name.
 
-    function misc_get_country_by_account($account, &$sqla, &$sqlm)
+    function misc_get_country_by_account($account)
     {
+        global $sqla;
+        
         $ip = $sqla->fetch("SELECT last_ip FROM account WHERE id='%s';", $account);
 
-        return misc_get_country_by_ip($ip[0]->last_ip, $sqlm);
+        return misc_get_country_by_ip($ip[0]->last_ip);
     }
 ?>
