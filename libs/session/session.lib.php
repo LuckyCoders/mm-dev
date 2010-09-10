@@ -83,7 +83,7 @@
                 break;
             case 'update':
             case 3:
-                return ($user_lvl >= $action_poermission['update']);
+                return ($user_lvl >= $action_permission['update']);
                 break;
             case 'delete':
             case 4:
