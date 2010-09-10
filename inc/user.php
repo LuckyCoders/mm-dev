@@ -789,8 +789,6 @@ switch ($err)
         break;
     default: //no error
         $err = -1;
-        $output .= "
-            <h1>{$lang_user['browse_acc']}</h1>";
 }
 
 if ($err == 5)
