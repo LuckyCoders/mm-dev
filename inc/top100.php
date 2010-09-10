@@ -5,6 +5,9 @@ function top100()
 {
     global $lang_top, $server, $realm_id, $itemperpage, $sqlc, $sqla, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     //==========================$_GET and SECURE========================
     $type = (isset($_GET['type'])) ? preg_replace("/[^a-zA-Z0-9_]/", "", $_GET['type']) : 'level';
 

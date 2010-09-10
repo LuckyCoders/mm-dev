@@ -8,6 +8,9 @@ function instances()
 {
     global $lang_instances, $sqlw, $sqlm, $itemperpage, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;
     if ($start>1); 
     else 

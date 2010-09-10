@@ -9,6 +9,9 @@ function browse_auctions()
     global $lang_auctionhouse, $lang_global, $lang_item, $itemperpage, $item_datasite, $realm_id, $characters_db, $world_db, $server, $user_lvl, $user_id, $sqlm, $sqlc, $sqlw, $smarty;
     wowhead_tt();
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     $red = "\"#DD5047\"";
     $blue = "\"#0097CD\"";
     $sidecolor = array(1 => $blue,2 => $red,3 => $blue,4 => $blue,5 => $red,6 => $red,7 => $blue,8 => $red,10 => $red);

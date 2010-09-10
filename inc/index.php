@@ -1,4 +1,4 @@
-<?php error_reporting(E_ALL & ~E_NOTICE);
+<?php
 require_once 'libs/bbcode_lib.php';
 require_once 'libs/char.lib.php';
 require_once 'libs/map_zone.lib.php';
@@ -8,10 +8,13 @@ require_once 'libs/map_zone.lib.php';
 //#############################################################################
 function front()
 {
-    global  $lang_global, $lang_index, $realm_id, $server, $action_permission, $user_lvl, $user_id, 
+    global  $lang_global, $lang_index, $realm_id, $server, $user_lvl, $user_id, 
             $showcountryflag, $motd_display_poster, $gm_online_count, $gm_online, $itemperpage, 
             $sqla, $sqlc, $sqlm, $sqlw, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+            
     $smarty->assign('lang_index', $lang_index);
     $smarty->assign('lang_global', $lang_global);
     
@@ -51,13 +54,13 @@ function front()
     $all_record_m = $sqlm->fetch("SELECT count(*) as `count` FROM mm_motd");
     $all_record_m = sanitize_int($all_record_m[0]->count);
 
-    if ($user_lvl >= $action_permission['delete'])
+    if (getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
 
-    if ($user_lvl >= $action_permission['insert'])
+    if (getPermission('insert'))
         $smarty->assign('hasInsertPermission', true);
 
-    if ($user_lvl >= $action_permission['update'])
+    if (getPermission('update'))
         $smarty->assign('hasUpdatePermission', true);
         
     if($all_record_m)
@@ -199,8 +202,4 @@ function front()
 $lang_index = lang_index();
 
 front();
-
-//unset($action);
-unset($action_permission);
-unset($lang_index);
 ?>

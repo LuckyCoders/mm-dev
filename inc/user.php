@@ -8,6 +8,9 @@ function browse_users()
 {
     global $lang_global, $lang_user, $user_lvl, $user_name, $action_permission, $itemperpage, $showcountryflag, $expansion_select, $gm_level_arr, $sqlm, $sqla, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     $online_pq = "online";
 
     //-------------------SQL Injection Prevention--------------------------------
@@ -96,19 +99,19 @@ function browse_users()
     $smarty->assign('user_name', $user_name);
     $smarty->assign('pagination', generate_pagination('index.php?page=user&order_by='.$order_by.'&amp;dir='.(($dir) ? 0 : 1).( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'', $all_record, $itemperpage, $start));
     
-    if ($user_lvl >= $action_permission['insert'])
+    if (getPermission('insert'))
         $smarty->assign('hasInsertPermission', true);
         
-    if ($user_lvl >= $action_permission['update'])
+    if (getPermission('update'))
         $smarty->assign('hasUpdatePermission', true);
         
-    if ($user_lvl >= $action_permission['delete'])
+    if (getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
 
     //==========================top tage navigaion ENDS here ========================
     
     // unknown working condition
-    //if($user_lvl >= $action_permission['delete'])
+    //if(getPermission('delete'))
     //              makebutton($lang_user['cleanup'], 'cleanup.php', 130);
 
 
@@ -161,7 +164,7 @@ function browse_users()
     $smarty->assign('colspan_special', $colspan);
         
     // backup is broken
-    //if($user_lvl >= $action_permission['insert'])
+    //if(getPermission('insert'))
     //    makebutton($lang_user['backup_selected_users'], 'javascript:do_submit(\'form1\',1)',230);
 
     if ($expansion_select || $showcountryflag)
@@ -186,7 +189,10 @@ function browse_users()
 //#######################################################################################################
 function del_user()
 {
-    global $lang_global, $lang_user, $action_permission, $smarty, $sqla;
+    global $lang_global, $lang_user, $smarty, $sqla;
+    
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
     
     if(isset($_GET['check'])) 
         $check = $_GET['check']; //array, sanitize later
@@ -233,7 +239,10 @@ function del_user()
 function dodel_user()
 {
     global $lang_global, $lang_user, $output, $realm_db, $characters_db, $realm_id, $user_lvl,
-           $tab_del_user_characters, $tab_del_user_realmd, $action_permission, $sqla, $smarty;
+           $tab_del_user_characters, $tab_del_user_realmd, $sqla, $smarty;
+    
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
     
     require_once("libs/del.lib.php");
 
@@ -274,9 +283,11 @@ function dodel_user()
 
 function backup_user() //needs to be redone
 {
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+
 /*
-    global $lang_global, $lang_user, $output, $realm_db, $characters_db, $realm_id, $user_lvl, $backup_dir, $action_permission;
-    valid_login($action_permission['insert']);
+    global $lang_global, $lang_user, $output, $realm_db, $characters_db, $realm_id, $user_lvl, $backup_dir;
 
     $sql = new SQL;
     $sql->connect($realm_db['addr'], $realm_db['user'], $realm_db['pass'], $realm_db['name']);
@@ -433,8 +444,11 @@ function backup_user() //needs to be redone
 //#######################################################################################################
 function add_new()
 {
-    global $lang_global, $lang_user, $action_permission, $expansion_select, $smarty;
+    global $lang_global, $lang_user, $expansion_select, $smarty;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_user', $lang_user);
     $smarty->assign('expansion_select', $expansion_select);
@@ -449,8 +463,11 @@ function add_new()
 //#########################################################################################################
 function doadd_new()
 {
-    global $lang_global, $action_permission, $sqla;
+    global $lang_global, $sqla;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     if (empty($_GET['new_user']) || empty($_GET['pass']))
         redirect("index.php?page=user&action=add_new&error=4");
 
@@ -491,9 +508,12 @@ function doadd_new()
 //###########################################################################################################
 function edit_user()
 {
-    global $lang_global, $lang_user, $user_lvl, $user_name, $gm_level_arr, $action_permission, $expansion_select, 
+    global $lang_global, $lang_user, $user_lvl, $user_name, $gm_level_arr, $expansion_select, 
     $developer_test_mode, $multi_realm_mode, $characters_db, $realm_id, $server, $sqla, $sqlm, $sqlc, $smarty;
 
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+    
     $online_pq = "online";
 
     if (empty($_GET['id'])) 
@@ -516,10 +536,10 @@ function edit_user()
     $smarty->assign('expansion_select', $expansion_select);
     $smarty->assign('id', $id);
     
-    if($user_lvl >= $action_permission['update'])
+    if(getPermission('update'))
         $smarty->assign('hasUpdatePermission', true);
         
-    if($user_lvl >= $action_permission['delete'])
+    if(getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
         
     if ($sqla->num_rows())
@@ -613,7 +633,10 @@ function edit_user()
 //############################################################################################################
 function doedit_user()
 {
-    global $lang_global, $user_lvl, $user_name, $action_permission, $sqla, $sqlm;
+    global $lang_global, $user_lvl, $user_name, $sqla, $sqlm;
+    
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
     
     if ( (!isset($_POST['pass'])||($_POST['pass'] === ''))
             && (!isset($_POST['mail'])||($_POST['mail'] === ''))

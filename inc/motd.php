@@ -8,6 +8,9 @@ function add_motd()
 {
     global $lang_motd, $lang_global, $smarty;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     $smarty->assign('editor', bbcode_add_editor());
     $smarty->assign('lang_motd', $lang_motd);
     $smarty->assign('lang_global', $lang_global);
@@ -22,6 +25,9 @@ function edit_motd()
 {
     global $lang_motd, $lang_global, $sqlm, $smarty;
 
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+    
     if(!empty($_GET['id']) && sanitize_int($_GET['id'])>0)
         $id = sanitize_int($_GET['id']);
     else
@@ -46,6 +52,9 @@ function do_add_motd()
 {
     global $user_name, $realm_id, $sqlm;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     if (empty($_POST['msg']))
         redirect('index.php?page=motd&error=1');
     else
@@ -67,6 +76,9 @@ function do_edit_motd()
 {
     global $user_name, $realm_id, $sqlm;
 
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+        
     if(!empty($_POST['id']) && sanitize_int($_POST['id'])>0 && !empty($_POST['msg']))
     {
         $id = sanitize_int($_POST['id']);
@@ -94,6 +106,9 @@ function delete_motd()
 {
     global $realm_id, $sqlm;
 
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
+    
     if(!empty($_GET['id']) && sanitize_int($_GET['id'])>0)
         $id = sanitize_int($_GET['id']);
     else

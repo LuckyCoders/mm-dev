@@ -4,6 +4,9 @@ function main()
 {
     global $lang_global, $lang_message, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_message', $lang_message);
     
@@ -25,6 +28,9 @@ function send()
 {
     global $lang_telnet, $lang_message, $soapTC;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     if (empty($_POST['msg'])) 
         redirect('index.php?page=message&action=result&mess='.$lang_message['empty_fields']);
 
@@ -64,6 +70,9 @@ function result()
 {
     global $lang_global, $lang_message, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
     $mess = (isset($_GET['mess'])) ? sanitize_html_string($_GET['mess']) : "";
 
     $smarty->assign('lang_global', $lang_global);

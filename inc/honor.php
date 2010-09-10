@@ -1,6 +1,9 @@
 <?php
 require_once("libs/char.lib.php");
 
+if (!getPermission('read'))
+    redirect('index.php?page=login&error=5');
+
 //global $lang_honor, $lang_global, $output, $characters_db, $realm_id, $itemperpage, $realm_db;
 
 $order_by = (isset($_GET['order_by'])) ? preg_replace("/[^a-zA-Z0-9_]/", "", $_GET['order_by']) : "honor";

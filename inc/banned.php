@@ -4,8 +4,11 @@
 //########################################################################################################################
 function show_list()
 {
-    global $lang_global, $lang_banned, $realm_db, $itemperpage, $action_permission, $user_lvl, $sqla, $smarty;
+    global $lang_global, $lang_banned, $realm_db, $itemperpage, $user_lvl, $sqla, $smarty;
     
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
     $smarty->assign('lang_global',$lang_global);
     $smarty->assign('lang_banned',$lang_banned);
 
@@ -52,7 +55,7 @@ function show_list()
     $banseltext = ($ban_type == "account_banned") ? $lang_banned['banned_ips'] : $lang_banned['banned_accounts'];
     $banseltype = ($ban_type == "account_banned") ? "ip_banned" : "account_banned";
     
-    if($user_lvl >= $action_permission['insert'])
+    if(getPermission('insert'))
         $smarty->assign('hasInsertPermission', true);
 
     $smarty->assign('ban_selection_text', $banseltext);
@@ -73,7 +76,7 @@ function show_list()
 
     $smarty->assign('ban_thcolumn_array', $ban_th_array);
 
-    if($user_lvl >= $action_permission['delete'])
+    if(getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
     
     $ban_array = array();
@@ -108,6 +111,9 @@ function do_delete_entry()
 {
     global $sqla, $user_lvl;
 
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
+        
     $ban_type = (isset($_GET['ban_type'])) ? sanitize_paranoid_string($_GET['ban_type']) : "error";
     switch ($ban_type) //need sanitize function like paranoid_string + _ (once)
     {
@@ -147,6 +153,9 @@ function do_delete_entry()
 function add_entry()
 {
     global $lang_global, $lang_banned, $smarty;
+    
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
 
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_banned', $lang_banned);
@@ -163,6 +172,9 @@ function do_add_entry()
 {
     global $user_name, $user_lvl, $sqla;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     if((empty($_GET['ban_type']))||(empty($_GET['entry'])) ||(empty($_GET['bantime'])))
         redirect("&error=1&action=add_entry", true);
 

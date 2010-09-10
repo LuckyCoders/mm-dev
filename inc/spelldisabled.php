@@ -7,6 +7,9 @@ function browse_spells()
 {
     global $lang_spelld, $lang_global, $realm_id, $user_lvl, $itemperpage, $sqlw, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     //==========================$_GET and SECURE=================================
     $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;
     if (is_numeric($start)); 
@@ -57,7 +60,7 @@ function browse_spells()
     $smarty->assign('lang_spelld', $lang_spelld);
     $smarty->assign('lang_global', $lang_global);
     //==========================top tage navigation starts here========================
-    if ($user_lvl >= $action_permission['insert'])
+    if (getPermission('insert'))
         $smarty->assign('hasInsertPermission', true);
 
     if ($search_by && $search_value)
@@ -75,7 +78,7 @@ function browse_spells()
     //==========================top tage navigation ENDS here ========================
     $smarty->assign('start', $start);
 
-    if($user_lvl >= $action_permission['delete'])
+    if(getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
 
     $tmp_svsb = $search_value && $search_by ? '&amp;error=3&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '';
@@ -106,6 +109,9 @@ function add_new()
 {
     global $lang_global, $lang_spelld, $smarty;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     $smarty->assign('lang_spelld', $lang_spelld);
     $smarty->assign('lang_global', $lang_global);
     
@@ -120,6 +126,9 @@ function doadd_new()
 {
     global $sqlw;
 
+    if (!getPermission('insert'))
+        redirect('index.php?page=login&error=5');
+    
     if (empty($_GET['entry']) && empty($_GET['flags']) && empty($_GET['comment']))
         redirect('index.php?page=spelldisabled&error=1');
 
@@ -148,6 +157,9 @@ function del_spell()
 {
     global $sqlw;
 
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
+    
     if(isset($_GET['check']))
         $check = $_GET['check'];
     else 

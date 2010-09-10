@@ -6,6 +6,9 @@ function events()
 {
     global $lang_events, $itemperpage, $sqlw, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
     //-------------------SQL Injection Prevention--------------------------------
     // this page has multipage support and field ordering, so we need these
     $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;

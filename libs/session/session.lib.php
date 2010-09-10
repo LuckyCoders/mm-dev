@@ -40,4 +40,58 @@
         //set the momentarily relative scriptname with args
         $current_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
+    
+    function getPermissions($page)
+    {     
+        global $menu_array;
+        
+        $action_permission = array();
+
+        foreach ($menu_array as $trunk)
+        {
+            foreach ($trunk[2] as $branch)
+                if($branch[0] == "index.php?page=".$page)
+                {
+                    $action_permission['read']   = $branch[2];
+                    $action_permission['insert'] = $branch[3];
+                    $action_permission['update'] = $branch[4];
+                    $action_permission['delete'] = $branch[5];
+                }
+        }
+        //non-existing:
+        if (!count($action_permission))
+            $action_permission = array('read' => 5, 'insert' => 5, 'update' => 5, 'delete' => 5);
+            
+        return $action_permission;
+    }
+    
+    function getPermission($type = 0)
+    {     
+        global $page, $user_lvl;
+        
+        $action_permission = getPermissions($page);
+        
+        switch($type)
+        {
+            case 'read':
+            case 1:
+                return ($user_lvl >= $action_permission['read']);
+                break;
+            case 'insert':
+            case 2:
+                return ($user_lvl >= $action_permission['insert']);
+                break;
+            case 'update':
+            case 3:
+                return ($user_lvl >= $action_poermission['update']);
+                break;
+            case 'delete':
+            case 4:
+                return ($user_lvl >= $action_permission['delete']);
+                break;
+                
+            default:
+                return false;
+        }
+    }
 ?>

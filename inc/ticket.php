@@ -5,8 +5,11 @@
 //#############################################################################
 function browse_tickets()
 {
-    global $lang_global, $lang_ticket, $action_permission, $user_lvl, $itemperpage, $sqlc, $smarty;
+    global $lang_global, $lang_ticket, $user_lvl, $itemperpage, $sqlc, $smarty;
 
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+    
     //==========================$_GET and SECURE=================================
     $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;
     if (is_numeric($start)); 
@@ -40,9 +43,9 @@ function browse_tickets()
     $smarty->assign('all_record', $all_record);
     $smarty->assign('pagination', generate_pagination("index.php?page=ticket&action=browse_tickets&amp;order_by=$order_by&amp;dir=".!$dir, $all_record, $itemperpage, $start));
 
-    if($user_lvl >= $action_permission['delete'])
+    if(getPermission('delete'))
         $smarty->assign('hasDeletePermission', true);
-    if($user_lvl >= $action_permission['update'])
+    if(getPermission('update'))
         $smarty->assign('hasUpdatePermission', true);
         
     $query = $sqlc->fetch("SELECT gm_tickets.guid, gm_tickets.timestamp, gm_tickets.playerGuid, SUBSTRING_INDEX(gm_tickets.message,' ',6) AS `message`, characters.name, characters.online
@@ -65,8 +68,11 @@ function browse_tickets()
 //########################################################################################################################
 function delete_tickets()
 {
-    global $lang_global, $action_permission, $sqlc;
+    global $lang_global, $sqlc;
 
+    if (!getPermission('delete'))
+        redirect('index.php?page=login&error=5');
+    
     if(isset($_GET['check'])) 
         $check = $_GET['check']; //array, sanitize later
     else 
@@ -100,8 +106,11 @@ function delete_tickets()
 //########################################################################################################################
 function edit_ticket()
 {
-    global  $lang_global, $lang_ticket, $action_permission, $sqlc, $smarty;
+    global  $lang_global, $lang_ticket, $sqlc, $smarty;
 
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+    
     if(!isset($_GET['id'])) 
         redirect("index.php?page=user&error=1");
 
@@ -132,8 +141,11 @@ function edit_ticket()
 //########################################################################################################################
 function do_edit_ticket()
 {
-    global $action_permission, $sqlc;
+    global $sqlc;
 
+    if (!getPermission('update'))
+        redirect('index.php?page=login&error=5');
+    
     if(empty($_POST['new_text']) || empty($_POST['id']) )
         redirect('index.php?page=ticket&error=1');
 

@@ -178,7 +178,5 @@ if ('dologin' === $action)
 else
     login();
 
-unset($action);
-unset($action_permission);
 unset($lang_login);
 ?>

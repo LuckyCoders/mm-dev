@@ -5,44 +5,19 @@
         $smarty->assign('isLoggedIn', true);
 
         $lang_header = lang_header(); //defined in language php
-        $action_permission = array();
         $menu = array();
         foreach ($menu_array as $trunk)
         {
-            // ignore "invisible array" this is for setting security read/write values
-            // for not accessible elements not in the navbar!
-            if ('invisible' === $trunk[1])
-                foreach ($trunk[2] as $branch)
-                {
-                    if($branch[0] === $lookup_file)
-                    {
-                        $action_permission['read']   = $branch[2];
-                        $action_permission['insert'] = $branch[3];
-                        $action_permission['update'] = $branch[4];
-                        $action_permission['delete'] = $branch[5];
-                    }
-                }
-            else
-            {
                 $link = $trunk[0];
                 $name = (isset($lang_header[$trunk[1]]) ? $lang_header[$trunk[1]] : $trunk[1]);
                 $items = array();
                 
                 foreach ($trunk[2] as $branch)
-                {
-                    if($branch[0] === $lookup_file)
-                    {
-                        $action_permission['read']   = $branch[2];
-                        $action_permission['insert'] = $branch[3];
-                        $action_permission['update'] = $branch[4];
-                        $action_permission['delete'] = $branch[5];
-                    }
                     if ($user_lvl >= $branch[2])
                         $items[] = array('filename' => $branch[0], 'name' => (isset($lang_header[$branch[1]]) ? $lang_header[$branch[1]] : $branch[1]));
-                }
                 
-                $menu[] = array('name' => $name, 'link' => $link, 'items' => $items);
-            }
+                if ($name != 'invisible')
+                    $menu[] = array('name' => $name, 'link' => $link, 'items' => $items);
         }
         
         $items = array();
@@ -58,7 +33,7 @@
                 if(isset($server[$realm->id]))
                 {
                     $set = ($realm_id === $realm->id) ? '>' : '';
-                    $items[] = array('filename' => 'realm.php?action=set_def_realm&amp;id='.$realm->id.'&amp;url='.$_SERVER['PHP_SELF'], 'name' => htmlentities($set.' '.$realm->name));
+                    $items[] = array('filename' => 'index.php?page=realm&action=set_def_realm&amp;id='.$realm->id.'&amp;url='.$_SERVER['PHP_SELF'], 'name' => htmlentities($set.' '.$realm->name));
                 }
             }
             unset($set);
@@ -70,8 +45,8 @@
         {
             $lang_login = lang_login(); //defined in language php
             $items[] = array('filename' => '#', 'name' => $lang_header['account']);
-            $items[] = array('filename' => 'register.php', 'name' => $lang_login['not_registrated']);
-            $items[] = array('filename' => 'login.php', 'name' => $lang_login['login']);
+            $items[] = array('filename' => 'index.php?page=register', 'name' => $lang_login['not_registrated']);
+            $items[] = array('filename' => 'index.php?page=login', 'name' => $lang_login['login']);
             unset($lang_login);
         }
         else
@@ -91,25 +66,15 @@
                 unset($char);
             }
             $items[] = array('filename' => '#', 'name' => $lang_header['account']);
-            $items[] = array('filename' => 'edit.php', 'name' => $lang_header['edit_my_acc']);
-            $items[] = array('filename' => 'logout.php', 'name' => $lang_header['logout']);
+            $items[] = array('filename' => 'index.php?page=edit', 'name' => $lang_header['edit_my_acc']);
+            $items[] = array('filename' => 'index.php?page=logout', 'name' => $lang_header['logout']);
         }
         $menu[] = array('link' => 'edit.php', 'name' => $lang_header['my_acc'], 'items' => $items);        
         $smarty->assign('topmenu',$menu);
         $smarty->assign('user_name',$user_name);
         $smarty->assign('user_lvl_name',$user_lvl_name);
         $smarty->assign('lang_header_menu',$lang_header['menu']);
-        
-        unset($items);
-        unset($name);
-        unset($link);
-        unset($menu);
-        unset($branch);
-        unset($trunk);
-        unset($lookup_file);
-        unset($menu_array);
-        unset($result);
-        unset($lang_header);
+
 
         //---------------------Version Information-------------------------------------
         if ( $show_version['show'] && $user_lvl >= $show_version['version_lvl'] )
