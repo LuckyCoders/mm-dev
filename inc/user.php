@@ -36,6 +36,7 @@ function browse_users()
     $search_by = '';
     $search_value = '';
 
+    $smarty->assign('action', 'browse_users');
    
     // if we have a search request, if not we just return everything
     if(isset($_GET['search_value']) && isset($_GET['search_by']))
@@ -199,6 +200,7 @@ function del_user()
     else 
         redirect("index.php?page=user&error=1");
         
+    $smarty->assign('action', 'del_user');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_user', $lang_user);
     
@@ -228,7 +230,7 @@ function del_user()
     $smarty->assign('user_del_array', $user_del_array);
     $smarty->assign('do_del_link', "index.php?page=user&action=dodel_user".$pass_array."\" type=\"wrn");
     
-    $smarty->display('user_delete.tpl');
+    $smarty->display('user.tpl');
     $smarty->clear_all_assign();
 }
 
@@ -268,11 +270,11 @@ function dodel_user()
         }
     }
     
-    $smarty->assign('action', 'do_delete');
+    $smarty->assign('action', 'do_deluser');
     $smarty->assign('deleted_accs', $deleted_accs);
     $smarty->assign('deleted_chars', $deleted_chars);
     
-    $smarty->display('user_delete.tpl');
+    $smarty->display('user.tpl');
     $smarty->clear_all_assign();
 }
 
@@ -449,11 +451,12 @@ function add_new()
     if (!getPermission('insert'))
         redirect('index.php?page=login&error=5');
     
+    $smarty->assign('action', 'add_new');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_user', $lang_user);
     $smarty->assign('expansion_select', $expansion_select);
     
-    $smarty->display('user_add.tpl');
+    $smarty->display('user.tpl');
     $smarty->clear_all_assign();
 }
 
@@ -530,6 +533,7 @@ function edit_user()
     $referred_by = $sqlc->fetch("SELECT name FROM characters WHERE guid = %d", $refguid);
     $referred_by = $referred_by[0]->name;
     
+    $smarty->assign('action', 'edit_user');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_user', $lang_user);
     $smarty->assign('char_data', $data);
@@ -623,7 +627,7 @@ function edit_user()
     else 
         redirect("index.php?page=user&error=17");
         
-    $smarty->display('user_edit.tpl');
+    $smarty->display('user.tpl');
     $smarty->clear_all_assign();
 }
 

@@ -43,12 +43,13 @@ function show_list()
     $order_dir = ($dir) ? "ASC" : "DESC";
     $dir = ($dir) ? 0 : 1;
     //==========================$_GET and SECURE end=============================
-
+    $smarty->assign('action', 'show_list');
+    
     $fromwhere = ($ban_type == 'account_banned') ? $ban_type . " WHERE active = 1" : $ban_type;
     $query_1 = $sqla->fetch("SELECT count(*) as `count` FROM %s", $fromwhere);
     $all_record = $query_1[0]->count;
     $smarty->assign('ban_count', $all_record);
-
+    
     $result = $sqla->fetch("SELECT %s, bandate, unbandate, bannedby, SUBSTRING_INDEX(banreason,' ',3) as reason FROM %s ORDER BY %s %s LIMIT %d, %d", $key_field, $fromwhere, $order_by, $order_dir, $start, $itemperpage);
     $this_page = $sqla->num_rows();
     
@@ -157,10 +158,11 @@ function add_entry()
     if (!getPermission('insert'))
         redirect('index.php?page=login&error=5');
 
+    $smarty->assign('action', 'add_entry');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_banned', $lang_banned);
     
-    $smarty->display('banned_add_entry.tpl');
+    $smarty->display('banned.tpl');
     $smarty->clear_all_assign();
 }
 

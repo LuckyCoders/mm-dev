@@ -7,10 +7,11 @@ function main()
     if (!getPermission('read'))
         redirect('index.php?page=login&error=5');
     
+    $smarty->assign('action', 'show_form');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_message', $lang_message);
     
-    $smarty->display('message_form.tpl');
+    $smarty->display('message.tpl');
     $smarty->clear_all_assign();
 }
 
@@ -75,11 +76,12 @@ function result()
         
     $mess = (isset($_GET['mess'])) ? sanitize_html_string($_GET['mess']) : "";
 
+    $smarty->assign('action', 'show_result');
     $smarty->assign('lang_global', $lang_global);
     $smarty->assign('lang_message', $lang_message);
     $smarty->assign('mess', $mess);
     
-    $smarty->display('message_result.tpl');
+    $smarty->display('message.tpl');
     $smarty->clear_all_assign();
 }
 

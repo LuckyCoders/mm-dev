@@ -56,6 +56,7 @@ function browse_spells()
     $all_record = $query_1[0]->count;
     unset($query_1);
 
+    $smarty->assign('action', 'browse_spells');
     $smarty->assign('all_record', $all_record);
     $smarty->assign('lang_spelld', $lang_spelld);
     $smarty->assign('lang_global', $lang_global);
@@ -112,10 +113,11 @@ function add_new()
     if (!getPermission('insert'))
         redirect('index.php?page=login&error=5');
     
+    $smarty->assign('action', 'add_new');
     $smarty->assign('lang_spelld', $lang_spelld);
     $smarty->assign('lang_global', $lang_global);
     
-    $smarty->display('spelldisabled_add.tpl');
+    $smarty->display('spelldisabled.tpl');
     $smarty->clear_all_assign();
 }
 
