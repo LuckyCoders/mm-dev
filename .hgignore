@@ -4,6 +4,7 @@ syntax: glob
 conf/config.php
 tmp/cache/*
 tmp/smarty_c/*
+img/icons/*.jpg
 
 # use regexp syntax.
 syntax: regexp
