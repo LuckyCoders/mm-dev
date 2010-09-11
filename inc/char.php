@@ -415,13 +415,106 @@ function char_main()
     $smarty->clear_all_assign();
 }
 
+//########################################################################################################################
+// SHOW CHARACTERS SPELL
+//########################################################################################################################
+function char_spell()
+{
+    global $lang_global, $lang_char, $realm_id, $characters_db, $user_lvl, $user_name,
+            $spell_datasite, $itemperpage, $world_db, $smarty, $sqlm, $sqla;
+    wowhead_tt();
+
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+
+    $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;
+    if (is_numeric($start)); else $start=0;
+
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    if ($sqlc->num_rows($result))
+    {
+        $char = get_object_vars($result[0]);
+        
+        $smarty->assign('action', 'char_spell');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            $all_record = $sqlc->fetch("SELECT count(spell) AS `count` FROM character_spell WHERE guid = %d and active = 1", $id);
+            $all_record = $all_record[0]->count;
+            $result = $sqlc->fetch("SELECT spell FROM character_spell WHERE guid = %d and active = 1 order by spell ASC LIMIT %d, %d", $id, $start, $itemperpage);
+
+            if ($sqlc->num_rows($result))
+            {
+                $smarty->assign('hasData', true);
+
+                $smarty->assign('pagination', generate_pagination('index.php?page=char&action=spell&id='.$id.'&amp;realm='.$realmid.'&amp;start='.$start.'', $all_record, $itemperpage, $start));
+
+                $spell_array = array();
+                $i = 0;
+                foreach ($result as $spell)
+                {
+                    $i++;
+                    $spell_array[] = array("i" => $i, "link" => $spell_datasite.$spell->spell, "icon" => spell_get_icon($spell->spell), "spellname" => spell_get_name($spell->spell));
+                }
+                $smarty->assign('spell_array', $spell_array);
+            }
+        }
+        else
+          ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
 
 //########################################################################################################################
 // MAIN
 //########################################################################################################################
 
 // action variable reserved for future use
-//$action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
+$action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
 
 // load language
 $lang_char = lang_char();
@@ -454,9 +547,14 @@ $smarty->clear_all_assign();
 unset($err);
 
 
-// we getting links to realm database and character database left behind by header
-// header does not need them anymore, might as well reuse the link
-char_main();
+switch ($action)
+{
+    case "spell":
+        char_spell();
+        break;
+    default:
+        char_main();
+}
 
 unset($lang_char);
 
