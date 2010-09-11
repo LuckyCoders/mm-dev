@@ -185,7 +185,7 @@ function get_lang_id()
 function get_theme()
 {
     global $themefolder;
-    $theme = $themefolder;
+    $tmp_theme = $themefolder;
     
     if (isset($_COOKIE['theme']))
         $tmp_theme = sanitize_paranoid_string($_COOKIE['theme']);

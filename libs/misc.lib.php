@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
     if (ini_get('max_execution_time') < 1800)
     {
         if (ini_set('max_execution_time',0));

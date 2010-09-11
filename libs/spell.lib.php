@@ -1,12 +1,12 @@
 <?php
-
+error_reporting(E_ALL);
 //#############################################################################
 //get spell name by its id
 function spell_get_name($id)
 {
-    global $sqlm,
+    global $sqlm;
     
-    $spell_name = $sqlm->fetch("SELECT field_136 FROM dbc_spell WHERE id = %d LIMIT 1", $id));
+    $spell_name = $sqlm->fetch("SELECT field_136 FROM dbc_spell WHERE id = %d LIMIT 1", $id);
     return $spell_name[0]->field_136;
 }
 
