@@ -12,6 +12,9 @@
     $smarty->assign('site_encoding',$site_encoding);
     $smarty->assign('theme',$theme);
     
+    if ($tt_lang)
+        $smarty->assign('show_wowhead', true);
+    
     $smarty->display('header.tpl');
     $smarty->clear_all_assign();
 ?>
