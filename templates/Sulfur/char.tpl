@@ -454,6 +454,112 @@
                             </table>
                         </div>
                         <br />
+{elseif $action eq 'char_talent'}
+                        <center>
+                            <div id="tab_content">
+                                <h1>{$lang_char.talents}</h1>
+                                <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char_additional.lvlcolor}
+                            </font>
+    {* end char header! *}
+                                <br /><br />
+                                <table class="lined" style="width: 550px;">
+                                    <tr valign="top" align="center">
+    {foreach from=$tab_data item=tab}
+                                        <td>
+                                            <table class="hidden" style="width: 0px;">
+                                                <tr>
+                                                    <td colspan="6" style="border-bottom-width: 0px;">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+        {foreach from=$tab.data item=for1}
+            {foreach from=$for1.data item=for2}
+                {if $for2.link}
+                                                    <td valign="bottom" align="center" style="border-top-width: 0px;border-bottom-width: 0px;">
+                                                        <a href="{$for2.link}" target="_blank">
+                                                            <img src="{$for2.icon}" width="36" height="36" class="icon_border_{$for2.border}" alt="" />
+                                                        </a>
+                                                        <div style="width:0px;margin:-14px 0px 0px 30px;font-size:14px;color:black">{$for2.tn}</div>
+                                                        <div style="width:0px;margin:-14px 0px 0px 29px;font-size:14px;color:white">{$for2.tn}</div>
+                                                    </td>
+                {else}
+                                                    <td valign="bottom" align="center" style="border-top-width: 0px;border-bottom-width: 0px;">
+                                                        <img src="img/blank.gif" width="44" height="44" alt="" />
+                                                    </td>
+                {/if}
+            {/foreach}
+                                                </tr>
+                                                <tr>
+        {/foreach}
+                                                    <td colspan="6" style="border-top-width: 0px;border-bottom-width: 0px;">
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6" valign="bottom" align="left">
+                                                    {$tab.field1}: {$tab.points}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+    {/foreach}
+                                    </tr>
+                                </table>
+                                <br />
+                                <table>
+                                    <tr>
+                                        <td align="left">
+                                            {$lang_char.talent_rate}: <br />
+                                            {$lang_char.talent_points}: <br />
+                                            {$lang_char.talent_points_used}: <br />
+                                            {$lang_char.talent_points_shown}: <br />
+                                            {$lang_char.talent_points_left}:
+                                        </td>
+                                        <td align="left">
+                                            {$talent_rate}<br />
+                                            {$talent_points}<br />
+                                            {$talent_points_used}<br />
+                                            {$l}<br />
+                                            {$talent_points_left}
+                                        </td>
+                                        <td width="64">
+                                        </td>
+                                        <td align="right">
+    {foreach from=$glyph_data item=glyph}
+                                            <a href="{$glyph.link}" target="_blank">
+                                                <img src="{$glyph.icon}" width="36" height="36" class="icon_border_0" alt="" />
+                                            </a>
+    {/foreach}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            </div>
+                            <br />
 {elseif $action eq ''}
 {/if}
 

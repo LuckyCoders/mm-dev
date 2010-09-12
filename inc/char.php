@@ -728,6 +728,228 @@ function char_mail()
     $smarty->clear_all_assign();
 }
 
+//########################################################################################################################
+// SHOW CHARACTER TALENTS
+//########################################################################################################################
+function char_talent()
+{
+    global $lang_global, $lang_char, $realm_id, $realm_db, $characters_db, $world_db, $server, 
+            $user_lvl, $user_name, $spell_datasite, $smarty, $sqla, $sqlm;
+            
+    // this page uses wowhead tooltops
+    wowhead_tt();
+
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender, (SELECT count(spell) FROM character_talent WHERE guid = %d AND spec = (SELECT activespec FROM characters WHERE guid = %d)) AS talent_points FROM characters WHERE guid = %d LIMIT 1", $id, $id, $id);
+
+    if ($sqlc->num_rows($result))
+    {
+        $char = get_object_vars($result[0]);
+    
+        $smarty->assign('action', 'char_talent');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+
+        // we get user permissions first
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            $result = $sqlc->fetch("SELECT spell FROM character_spell WHERE guid = %d and active = 1 and disabled = 0 ORDER BY spell DESC", $id);
+
+            if ($sqlc->num_rows($result))
+            {
+                $talent_rate = (isset($server[$realmid]['talent_rate']) ? $server[$realmid]['talent_rate'] : 1);
+                $talent_points = ($char['level'] - 9) * $talent_rate;
+                $talent_points_left = $char['talent_points'];
+                $talent_points_used = $talent_points - $talent_points_left;
+
+                $tabs = array();
+                $l = 0;
+
+                foreach ($result as $talent)
+                    if ($l < $talent_points_used)
+                    {
+                        $talent = get_object_vars($talent);
+                        if ($tab = $sqlm->fetch("SELECT field_1, field_2, field_3, field_13, field_16 from dbc_talent where field_8 = %s LIMIT 1", $talent['spell']))
+                        {
+                            $tab = get_object_vars($tab[0]);
+                            if (isset($tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']]))
+                                $l -=$tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']][1];
+                            $tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']] = array($talent['spell'], '5', '5');
+                            $l += 5;
+
+                            if ($tab['field_13'])
+                                talent_dependencies($tabs, $tab, $l);
+                        }
+                        elseif ($tab = $sqlm->fetch("SELECT field_1, field_2, field_3, field_13, field_16, field_8 from dbc_talent where field_7 = %s LIMIT 1", $talent['spell']))
+                        {
+                            $tab = get_object_vars($tab[0]);
+                            if (isset($tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']]))
+                                $l -=$tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']][1];
+
+                            $tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']] = array($talent['spell'], '4', ($tab['field_8'] ? '2' : '5'));
+                            $l += 4;
+                            
+                            if ($tab['field_13'])
+                                talent_dependencies($tabs, $tab, $l);
+                        }
+                        elseif ($tab = $sqlm->fetch("SELECT field_1, field_2, field_3, field_13, field_16, field_7 from dbc_talent where field_6 = %s LIMIT 1", $talent['spell']))
+                        {
+                            $tab = get_object_vars($tab[0]);
+                            if (isset($tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']]))
+                                $l -=$tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']][1];
+
+                            $tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']] = array($talent['spell'],'3', ($tab['field_7'] ? '2' : '5'));
+                            $l += 3;
+                            
+                            if ($tab['field_13'])
+                                talent_dependencies($tabs, $tab, $l);
+                        }
+                        elseif ($tab = $sqlm->fetch("SELECT field_1, field_2, field_3, field_13, field_16, field_6 from dbc_talent where field_5 = %s LIMIT 1", $talent['spell']))
+                        {
+                            $tab = get_object_vars($tab[0]);
+                            if (isset($tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']]))
+                                $l -=$tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']][1];
+
+                            $tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']] = array($talent['spell'],'2', ($tab['field_6'] ? '2' : '5'));
+                            $l += 2;
+                            
+                            if ($tab['field_13'])
+                                talent_dependencies($tabs, $tab, $l);
+                        }
+                        elseif ($tab = $sqlm->fetch("SELECT field_1, field_2, field_3, field_13, field_16, field_5 from dbc_talent where field_4 = %s LIMIT 1", $talent['spell']))
+                        {
+                            $tab = get_object_vars($tab[0]);
+                            if (isset($tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']]))
+                                $l -=$tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']][1];
+
+                            $tabs[$tab['field_1']][$tab['field_2']][$tab['field_3']] = array($talent['spell'],'1', ($tab['field_5'] ? '2' : '5'));
+                            $l += 1;
+                            
+                            if ($tab['field_13'])
+                                talent_dependencies($tabs, $tab, $l);
+                        }
+                    }
+
+                $tab_data = array();
+                foreach ($tabs as $k => $data)
+                {
+                    $points = 0;
+
+                    $tab_for1 = array();
+                    for($i=0;$i<11;++$i)
+                    {
+                        $tab_for2 = array();
+                        for($j=0;$j<4;++$j)
+                        {
+                            if(isset($data[$i][$j]))
+                            {
+                                $tab_for2[] = array("link" => $spell_datasite.$data[$i][$j][0], "icon" => spell_get_icon($data[$i][$j][0]), "border" => $data[$i][$j][2], "tn" => $data[$i][$j][1]);
+                                $points += $data[$i][$j][1];
+                            }
+                            else
+                                $tab_for2[] = array();
+                        }
+                        $tab_for1[] = array("data" => $tab_for2);
+                    }
+                    $tmp = $sqlm->fetch("SELECT field_1 FROM dbc_talenttab WHERE id = %d", $k);
+                    $tab_data[] = array("data" => $tab_for1, "field1" => $tmp[0]->field_1, "points" => $points);
+                }
+                $smarty->assign('tab_data', $tab_data);
+
+                unset($l);
+                unset($talent_rate);
+                unset($talent_points);
+                unset($talent_points_used);
+                unset($talent_points_left);
+
+                $result = $sqlc->fetch("SELECT * FROM character_glyphs WHERE guid = %d AND spec = (SELECT activespec FROM characters WHERE guid = %d)", $id, $id);
+                if ($sqlc->num_rows($result))
+                {
+                    $glyphs = get_object_vars($result[0]);
+                    $glyphs = array($glyphs['glyph1'], $glyphs['glyph2'], $glyphs['glyph3'], $glyphs['glyph4'], $glyphs['glyph5'], $glyphs['glyph6']);
+                }
+                else
+                    $glyphs = array(0,0,0,0,0,0);
+                    
+                $glyph_array = array();
+                for($i=0;$i<6;++$i)
+                    if ($glyphs[$i] && $glyphs[$i] > 0)
+                    {
+                        $glyph = $sqlm->fetch("SELECT IFNULL(field_1,0) FROM dbc_glyphproperties WHERE id = %d", $glyphs[$i]);
+                        $glyph_array[] = array("link" => $spell_datasite.$glyph, "icon" => spell_get_icon($glyph));
+                    }
+                $smarty->assign('glyph_data', $glyph_array);
+                unset($glyphs);
+            }
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
+
+
+function talent_dependencies(&$tabs, &$tab, &$i)
+{
+    global $sqlm;
+
+    if ($dep = $sqlm->fetch("SELECT field_1, field_2, field_3, field_%s, field_13,field_16%s from dbc_talent where id = %d and field_%s != 0 LIMIT 1", ($tab['field_16'] + 1), (($tab['field_16'] < 4) ? ', field_'.($tab['field_16'] + 2).'' : ''), $tab['field_13'], ($tab['field_16'] + 1)))
+    {
+        $dep = get_object_vars($dep[0]);
+        
+        if(empty($tabs[$dep['field_1']][$dep['field_2']][$dep['field_3']]))
+        {
+            $tabs[$dep['field_1']][$dep['field_2']][$dep['field_3']] = array($dep['field_'.($tab['field_16'] + 1).''], ''.($tab['field_16'] + 1).'', (($tab['field_16'] < 4) ? ($dep['field_'.($tab['field_16'] + 2).''] ? '2' : '5') : '5'));
+            $i += ($tab['field_16'] + 1);
+            
+            if ($dep['field_13'])
+                talent_dependencies($tabs, $dep, $i);
+        }
+    }
+}
 
 //########################################################################################################################
 // MAIN
@@ -778,6 +1000,9 @@ switch ($action)
         break;
     case "mail":
         char_mail();
+        break;
+    case "talent":
+        char_talent();
         break;
     default:
         char_main();
