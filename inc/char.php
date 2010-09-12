@@ -617,6 +617,118 @@ function char_pets()
     $smarty->clear_all_assign();
 }
 
+
+//########################################################################################################################
+// SHOW CHARACTERS MAILS
+//########################################################################################################################
+function char_mail()
+{
+    global $lang_global, $lang_char, $lang_mail, $realm_id, $world_db, $realm_db, $mmfpm_db, $characters_db, $user_lvl, $user_name, 
+            $item_datasite, $itemperpage, $sqla, $smarty;
+
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+
+    //==========================$_GET and SECURE=================================
+    $start = (isset($_GET['start'])) ? sanitize_int($_GET['start']) : 0;
+    if (is_numeric($start)); 
+    else 
+        $start = 0;
+
+    $order_by = (isset($_GET['order_by'])) ? preg_replace("/[^a-zA-Z0-9_]/", "", $_GET['order_by']) : 'id';
+    if (preg_match('/^[_[:lower:]]{1,12}$/', $order_by)); 
+    else 
+        $order_by = 'id';
+
+    $dir = (isset($_GET['dir'])) ? sanitize_int($_GET['dir']) : 1;
+    if (preg_match('/^[01]{1}$/', $dir)); 
+    else 
+        $dir = 1;
+
+    $order_dir = ($dir) ? 'ASC' : 'DESC';
+    $dir = ($dir) ? 0 : 1;
+    //==========================$_GET and SECURE end=============================
+
+  
+
+    // getting character data from database
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    if ($sqlc->num_rows($result))
+    {
+        $char = get_object_vars($result[0]);
+    
+        $smarty->assign('action', 'char_mail');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('lang_mail', $lang_mail);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+
+        // we get user permissions first
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            $query = $sqlc->fetch("SELECT a.id as id, a.messageType as messagetype, a.sender as sender, a.subject as subject, a.body as body, a.has_items as hasitems, a.money as money, a.cod as cod, a.checked as checked,
+                                    b.item_template as itemtemplate FROM mail a INNER JOIN mail_items b ON a.id = b.mail_id where a.receiver = %d LIMIT %d, %d", $id, $start, $itemperpage);
+            $total_mail = $sqlc->fetch("SELECT count(*) AS `count` FROM mail WHERE receiver = %d", $id);
+            $total_mail = $total_mail[0]->count;
+
+            $smarty->assign('total_mail', $total_mail);
+            $smarty->assign('pagination', generate_pagination('index.php?page=char&action=mail&start='.$start.'&amp;order_by='.$order_by.'&amp;dir='.(($dir) ? 0 : 1), $total_mail, $itemperpage, $start));
+                
+            $mail_array = array();
+            if ($total_mail)
+                foreach ($query as $mail)
+                    $mail_array[] = array_merge(get_object_vars($mail), array("msource" => get_mail_source($mail->messagetype), "charname" => get_char_name($mail->sender), "link" => $item_datasite.$mail->itemtemplate, "icon" => get_item_icon($mail->itemtemplate), "checkstate" => get_check_state($mail->checked)));
+
+            $smarty->assign('mail_array', $mail_array);
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
+
+
 //########################################################################################################################
 // MAIN
 //########################################################################################################################
@@ -626,6 +738,7 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
 
 // load language
 $lang_char = lang_char();
+$lang_mail = lang_mail();
 
 $err = (isset($_GET['error'])) ? $_GET['error'] : NULL;
 
@@ -662,6 +775,9 @@ switch ($action)
         break;
     case "pets":
         char_pets();
+        break;
+    case "mail":
+        char_mail();
         break;
     default:
         char_main();

@@ -379,6 +379,81 @@
                     </div>
                     </div>
                     <br />
+{elseif $action eq 'char_mail'}
+                    <center>
+                        <div id="tab_content">
+                            <h1>{$lang_char.mail}</h1>
+                            <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char_additional.lvlcolor}
+                            </font>
+    {* end char header! *}
+                            <br /><br />
+                            <table class="lined" style="width: 100%">
+                                <tr>
+                                    <td align="left">
+                                        Total Mails: {$total_mail}
+                                    </td>
+                                    <td align="right" width="45%">
+                                        {$pagination}
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="lined" style="width: 100%">
+                                <tr>
+                                    <th width="5%">{$lang_mail.mail_type}</th>
+                                    <th width="10%">{$lang_mail.sender}</th>
+                                    <th width="15%">{$lang_mail.subject}</th>
+                                    <th width="5%">{$lang_mail.has_items}</th>
+                                    <th width="25%">{$lang_mail.text}</th>
+                                    <th width="20%">{$lang_mail.money}</th>
+                                    <th width="5%">{$lang_mail.checked}</th>
+                                </tr>
+    {foreach from=$mail_array item=mail}
+                                <tr valign=top>
+                                    <td>{$mail.msource}</td>
+                                    <td><a href="char.php?id={$mail.sender}">{$mail.charname}</a></td>
+                                    <td>{$mail.subject}</td>
+                                    <td>
+                                        <a style="padding:2px;" href="{$mail.link}" target="_blank">
+                                            <img class="bag_icon" src="{$mail.icon}" alt="" />
+                                        </a>
+                                    </td>
+                                    <td>{$mail.body}</td>
+                                    <td>
+                                        {$mail.money|substr:0:-4}<img src="img/gold.gif" alt="" align="middle" />
+                                        {$mail.money|substr:-4:2}<img src="img/silver.gif" alt="" align="middle" />
+                                        {$mail.money|substr:-2}<img src="img/copper.gif" alt="" align="middle" />
+                                    </td>
+                                    <td>{$mail.checkstate}</td>
+                                </tr>
+    {/foreach}
+                            </table>
+                        </div>
+                        <br />
 {elseif $action eq ''}
 {/if}
 
