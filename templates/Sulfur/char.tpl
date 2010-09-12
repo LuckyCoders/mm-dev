@@ -318,6 +318,67 @@
                             </div>
                         </div>
                         <br />
+{elseif $action eq 'char_pets'}
+                    <center>
+                        <div id="tab_content">
+                        <h1>{$lang_char.pets}</h1>
+                        <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char_additional.lvlcolor}
+                            </font>
+    {* end char header! *}
+                        <br /><br />
+    {foreach item=pet from=$pet_array}
+                        <font class="bold">{$pet.name} - lvl {$pet.lvlcolor}
+                            <a style="padding:2px;" onmouseover="toolTip('{$pet.hap_text}', \'item_tooltip\')" onmouseout="toolTip()"><img src="img/pet/happiness_{$pet.hap_val}.jpg" alt="" /></a>
+                            <br /><br />
+                        </font>
+                        <table class="lined" style="width: 550px;">
+                            <tr>
+                                <td align="right">Exp:</td>
+                                <td valign="top" class="bar skill_bar" style="background-position: {$pet.bpos}px;">
+                                    <span>{$pet.exp}/{$pet.next_lvl_xp}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="right">Pet Abilities:</td>
+                                <td align="left">
+        {foreach from=$pet.abilities item=ability}
+                                    <a style="padding:2px;" href="{$ability.link}" target="_blank">
+                                        <img src="{$ability.img}" alt="{$ability.alt}" class="icon_border_0" />
+                                    </a>
+        {/foreach}
+                                </td>
+                            </tr>
+                        </table>
+                        <br /><br />
+    {/foreach}
+                    </div>
+                    </div>
+                    <br />
 {elseif $action eq ''}
 {/if}
 

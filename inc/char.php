@@ -510,6 +510,114 @@ function char_spell()
 }
 
 //########################################################################################################################
+// SHOW CHARACTER PETS
+//########################################################################################################################
+function char_pets()
+{
+    global $lang_global, $lang_char, $world_db, $realm_id, $characters_db, $user_lvl, $user_name, $spell_datasite, $pet_ability, $smarty, $sqla, $sqlm;
+    wowhead_tt();
+
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    if ($sqlc->num_rows($result))
+    {
+        $char = get_object_vars($result[0]);
+
+        $smarty->assign('action', 'char_pets');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+        
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+      
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            $result = $sqlc->fetch("SELECT id, level, exp, name, curhappiness FROM character_pet WHERE owner = %d", $id);
+            
+            if ($sqlc->num_rows($result))
+            {
+                $pet_array = array();
+                foreach ($result as $pet)
+                {
+                    $happiness = floor($pet->curhappiness/333000);
+                    if (1 == $happiness)
+                    {
+                        $hap_text = 'Content';
+                        $hap_val = 1;
+                    }
+                    elseif (2 == $happiness)
+                    {
+                        $hap_text = 'Happy';
+                        $hap_val = 2;
+                    }
+                    else
+                    {
+                        $hap_text = 'Unhappy';
+                        $hap_val = 0;
+                    }
+                    $pet_next_lvl_xp = floor(char_get_xp_to_level($pet->level)/4);
+
+                    $ability_results = $sqlc->fetch("SELECT spell FROM pet_spell WHERE guid = %d and active > 1", $pet->id);
+                    $abilities = array();
+                    if ($sqlc->num_rows($ability_results))
+                        foreach ($ability_results as $ability)
+                            $abilities[] = array("link" => $spell_datasite.$ability->spell, "img" => spell_get_icon($ability->spell), "alt" => $ability->spell);
+
+                    $pet_array[] = array_merge(get_object_vars($pet), array("abilities" => $abilities, "hap_text" => $hap_text, "hap_val" => $hap_val, "lvlcolor" => char_get_level_color($pet->level), "next_lvl_xp" => $pet_next_lvl_xp, "bpos" => (round(385*$pet->exp/$pet_next_lvl_xp)-385)));
+                }
+                unset($ability_results);
+                unset($pet_next_lvl_xp);
+                unset($happiness);
+            }
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
+
+//########################################################################################################################
 // MAIN
 //########################################################################################################################
 
@@ -551,6 +659,9 @@ switch ($action)
 {
     case "spell":
         char_spell();
+        break;
+    case "pets":
+        char_pets();
         break;
     default:
         char_main();
