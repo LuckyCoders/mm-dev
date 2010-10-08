@@ -181,7 +181,7 @@ error_reporting(E_ALL);
     {
         global $sqlm;
         
-        $country = $sqlm->fetch("SELECT c.code, c.country FROM ip2nationCountries c, ip2nation i WHERE i.ip < INET_ATON(\"%s\") AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", $ip);
+        $country = $sqlm->fetch("SELECT c.code, c.country FROM ip2nationcountries c, ip2nation i WHERE i.ip < INET_ATON(\"%s\") AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", $ip);
 
         return array("code" => $country[0]->code, "country" => $country[0]->country);
     }
