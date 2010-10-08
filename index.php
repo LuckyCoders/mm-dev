@@ -16,12 +16,13 @@
     require("libs/misc.lib.php");
 
     /**
-     * Set some variables
+     * Set some stuff
      */
+    set_exception_handler('mm_exception_handler'); //uncaught exceptions might expose mysql-login or stuff like that, tempfix
     $time_start = microtime(true); //page generation time
     $theme = get_theme(); //get.lib
     $lang = get_language(); //get.lib
-    if (!$realm_id) //set in session.lib if user is logged in
+    if (!isset($realm_id)) //set in session.lib if user is logged in
         $realm_id = 1;
         
     /**

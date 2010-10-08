@@ -259,4 +259,22 @@ error_reporting(E_ALL);
             return( count($mxhosts) > 0 );
         }
     }
+    
+    function mm_exception_handler($e) {
+        global $mmfpm_db,$auth_db,$world_db,$characters_db,$server;
+        $bad = array($mmfpm_db['dbUser'],$mmfpm_db['dbPass'],$auth_db['dbUser'],$auth_db['dbPass']);
+        
+        foreach ($world_db as $v)
+            array_push($bad, $v['dbUser'], $v['dbPass']);
+            
+        foreach ($characters_db as $v)
+            array_push($bad, $v['dbUser'], $v['dbPass']);
+            
+        foreach ($server as $v)
+            array_push($bad, $v['soap_user'], $v['soap_pass']);
+        
+        $trace = str_replace($bad, "", $e->getTraceAsString());
+        echo 'Error on line '.$e->getLine().' in '.$e->getFile().': <b>'.$e->getMessage().'</b> | Stacktrace: '.$trace;
+    }
+
 ?>

@@ -51,7 +51,7 @@ function dologin()
                 setcookie('realm_id', $_SESSION['realm_id'], time()+60*60*24*7);
                 setcookie('p_hash', $user_pass, time()+60*60*24*7);
             }
-            redirect('index.php');
+            redirect('index.php?page=index');
         }
     }
     else
@@ -118,7 +118,7 @@ function do_cookie_login()
         $id = $result->id;
         $banned_count = $sqla->fetch("SELECT id FROM account_banned WHERE id = '%d' AND active = '1'",$id);
         if ($sqla->num_rows())
-            redirect('login.php?error=3');
+            redirect('index.php?page=login&error=3');
         else
         {
             $_SESSION['user_id']   = $id;
@@ -132,7 +132,7 @@ function do_cookie_login()
             $_SESSION['realm_id']  = sanitize_int($_COOKIE['realm_id']);
             $_SESSION['client_ip'] = (isset($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : getenv('REMOTE_ADDR');
             $_SESSION['logged_in'] = true;
-            redirect('index.php');
+            redirect('index.php?page=index');
         }
     }
     else
