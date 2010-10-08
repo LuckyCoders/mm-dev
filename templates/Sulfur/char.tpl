@@ -560,6 +560,180 @@
                             </div>
                             </div>
                             <br />
+{elseif $action eq 'char_achieve'}
+            <center>
+                <script type="text/javascript">
+    {literal}                        function expand(thistag)
+                    {
+                        var i = 0;
+    {/literal}
+                        %%REPLACE%%
+    {literal}
+                        if (thistag == 'tsummary')
+                        {
+    {/literal}
+                            document.getElementById('tsummary').style.display="table";
+                            document.getElementById('divsummary').innerHTML = '[-] '{$lang_char.summary}' ;
+    {literal}                        for(x in main_cats)
+                            {
+                                if(document.getElementById(main_cats[x]).style.display=="table")
+                                {
+                                    document.getElementById(main_cats[x]).style.display="none";
+                                    document.getElementById(main_cats_achieve[x]).style.display="none";
+                                    document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
+                                }
+                            }
+                            for(x in main_sub_cats)
+                            {
+                                if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
+                                {
+                                    document.getElementById(main_sub_cats_achieve[x]).style.display="none";
+                                    document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (document.getElementById('tsummary').style.display="table")
+                            {
+                                document.getElementById('tsummary').style.display="none";
+    {/literal}
+                                document.getElementById('divsummary').innerHTML = '[+] {$lang_char.summary}';
+    {literal}
+                            }
+                            for(x in main_cats)
+                            {
+                                if (main_cats[x] == thistag)
+                                {
+                                    i = 1;
+                                }
+                            }
+
+                            if (i == 1)
+                            {
+                                for(x in main_cats)
+                                {
+                                    if (main_cats[x] == thistag)
+                                    {
+                                        if(document.getElementById(main_cats[x]).style.display=="table")
+                                        {
+                                            document.getElementById(main_cats[x]).style.display="none";
+                                            document.getElementById(main_cats_achieve[x]).style.display="none";
+                                            document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
+                                            document.getElementById('tsummary').style.display="table";
+    {/literal}
+                                            document.getElementById('divsummary').innerHTML = '[-] {$lang_char.summary}';
+    {literal}
+                                        }
+                                        else
+                                        {
+                                            document.getElementById(main_cats[x]).style.display="table";
+                                            document.getElementById(main_cats_achieve[x]).style.display="table";
+                                            document.getElementById(main_cats_div[x]).innerHTML = '[-] ' + main_cats_name[x];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(document.getElementById(main_cats[x]).style.display=="table")
+                                        {
+                                            document.getElementById(main_cats[x]).style.display="none";
+                                            document.getElementById(main_cats_achieve[x]).style.display="none";
+                                            document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
+                                        }
+                                    }
+                                }
+                                for(x in main_sub_cats)
+                                {
+                                    if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
+                                    {
+                                        document.getElementById(main_sub_cats_achieve[x]).style.display="none";
+                                        document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
+                                    }
+                                }
+                            }
+                            else if (i == 0)
+                            {
+                                for(x in main_sub_cats)
+                                {
+                                    if (main_sub_cats[x] == thistag)
+                                    {
+                                        if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
+                                        {
+                                            document.getElementById(main_sub_cats_achieve[x]).style.display="none";
+                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
+                                        }
+                                        else
+                                        {
+                                            document.getElementById(main_sub_cats_achieve[x]).style.display="table";
+                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[-] ' + main_sub_cats_name[x];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
+                                        {
+                                            document.getElementById(main_sub_cats_achieve[x]).style.display="none";
+                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
+                                        }
+                                    }
+                                }
+                                for(x in main_cats)
+                                {
+                                    if(document.getElementById(main_cats_achieve[x]).style.display=="table")
+                                    {
+                                        document.getElementById(main_cats_achieve[x]).style.display="none";
+                                    }
+                                }
+                            }
+                        }
+                    }
+    {/literal}
+                </script>
+                <center>
+                    <div id="tab_content">
+                        <h1>{$lang_char.achievements}</h1>
+                        <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char_additional.lvlcolor}
+                            </font>
+    {* end char header! *}
+                        <br /><br />
+                        <table class="top_hidden" style="width: 90%;">
+                            <tr>
+                                <td width="30%">
+                                </td>
+                                %%REPLACE_POINTS%%
+                                <td align="right">
+                                    <form action="char_achieve.php?id={$id}&amp;realm={$realmid}" method="post" name="form">
+                                        {$lang_char.show} :
+                                        {html_options name=show_type options=$show_type_options selected=$show_type}
+                                    </form>
+                                </td>
+                                <td align="right">
+    
 {elseif $action eq ''}
 {/if}
 
