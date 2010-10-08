@@ -61,7 +61,7 @@
                                     </td>
                                 </tr>
                                 <tr align="center">
-                                    <td><a href="register.php?action=pass_recovery">{$lang_login.pass_recovery}</a></td>
+                                    <td><a href="index.php?page=register&action=pass_recovery">{$lang_login.pass_recovery}</a></td>
                                 </tr>
                                 <tr>
                                     <td>
