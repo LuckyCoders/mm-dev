@@ -415,7 +415,7 @@
                                         <tr>
                                             <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'---></td>
                                             <td>
-                                                <a href="index.php?page=char&id={$cdata.guid}&amp;realm={$char_data.id}">{$cdata.name}  - <img src='img/c_icons/{$cdata.race}-{$cdata.gender}.gif' onmousemove="toolTip('{$cdata.racename}','item_tooltip')" onmouseout="toolTip()" alt="" />
+                                                <a href="index.php?page=char&id={$cdata.guid}">{$cdata.name}  - <img src='img/c_icons/{$cdata.race}-{$cdata.gender}.gif' onmousemove="toolTip('{$cdata.racename}','item_tooltip')" onmouseout="toolTip()" alt="" />
                                                 <img src="img/c_icons/{$cdata.class}.gif" onmousemove="toolTip('{$cdata.classname}','item_tooltip')" onmouseout="toolTip()" alt=""/> - lvl {$cdata.levelcolor}</a>
                                             </td>
                                         </tr>

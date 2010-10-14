@@ -1891,6 +1891,7 @@ $lang_id_tab = array(
   'BugTracker' => 'Bug Tracker',
   'Administrator' => 'Administrator',
   'SysOP' => 'Sys OP',
+  'unknown' => 'Unknown',
   //------factions------
   'Alliance' => 'Allianz',
   'Horde' => 'Horde',

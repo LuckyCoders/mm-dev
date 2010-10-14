@@ -160,7 +160,7 @@ function front()
                 }
 
                 $gm = $sqla->fetch("SELECT gmlevel FROM account_access WHERE id=%d", $char->account);
-                $gm = $gm[0]->gmlevel;
+                $gm = ($sqla->num_rows()) ? $gm[0]->gmlevel : 0;
                 $guild_name = $sqlc->fetch("SELECT name FROM guild WHERE guildid=%d", $char->guildid);
                 $guild_name = ($sqlc->num_rows()) ? $guild_name[0]->name : "";
 

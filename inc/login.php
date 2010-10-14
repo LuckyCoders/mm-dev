@@ -10,7 +10,7 @@ function dologin()
 
     if (empty($_POST['user']) || empty($_POST['pass']))
         redirect('&error=2', true);
-
+    
     $user_name  = sanitize_paranoid_string($_POST['user']);
     $user_pass  = sanitize_paranoid_string($_POST['pass']);
 
@@ -108,7 +108,7 @@ function do_cookie_login()
     $user_name = sanitize_paranoid_string($_COOKIE['uname']);
     $user_pass = sanitize_paranoid_string($_COOKIE['p_hash']);
 
-    $result = $sqla->fetch("SELECT account.id, username, gmlevel FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE username = '%s' AND sha_pass_hash = '%s'",$user_name,$user_pass);
+    $result = $sqla->fetch("SELECT account.id, account.username, account_access.gmlevel FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE username = '%s' AND sha_pass_hash = '%s'",$user_name,$user_pass);
 
     unset($user_name);
     unset($user_pass);

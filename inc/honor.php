@@ -20,7 +20,7 @@ $char_array = array();
 foreach ($query as $char)
 {
     $guild_name = $sqlc->fetch("SELECT `name` FROM `guild` WHERE `guildid`=%d;", $char->guild);
-    $guild_name = $guild_name[0]->name;
+    $guild_name = ($guild_name[0]) ? $guild_name[0]->name : "";
     
     $char_tmp = array("guildname" => $guild_name, "classname" => char_get_class_name($char->class), "racename" => char_get_race_name($char->race), "levelcolor" => char_get_level_color($char->level),
                     "pvprankname" => char_get_pvp_rank_name($char->honor, char_get_side_id($char->race)), "pvprankid" => char_get_pvp_rank_id($char->honor, char_get_side_id($char->race)));
@@ -33,7 +33,7 @@ $char_array = array();
 foreach ($query as $char)
 {
     $guild_name = $sqlc->fetch("SELECT `name` FROM `guild` WHERE `guildid`=%d;", $char->guild);
-    $guild_name = $guild_name[0]->name;
+    $guild_name = ($guild_name[0]) ? $guild_name[0]->name : "";
     
     $char_tmp = array("guildname" => $guild_name, "classname" => char_get_class_name($char->class), "racename" => char_get_race_name($char->race), "levelcolor" => char_get_level_color($char->level),
                     "pvprankname" => char_get_pvp_rank_name($char->honor, char_get_side_id($char->race)), "pvprankid" => char_get_pvp_rank_id($char->honor, char_get_side_id($char->race)));

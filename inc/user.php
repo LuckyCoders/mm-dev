@@ -49,22 +49,22 @@ function browse_users()
             $search_by = 'username';
         unset($search_menu);
 
-        if ($search_by === 'greater_gmlevel')
+        if ($search_by == 'greater_gmlevel')
         {
             $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE account_access.gmlevel < %d ORDER BY %s %s LIMIT %d, %d", $search_value, $order_by, $order_dir, $start, $itemperpage);
             $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account_access WHERE gmlevel < %d", $search_value);
         }
-        elseif ($search_by === 'gmlevel')
+        elseif ($search_by == 'gmlevel')
         {
             $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE account_access.gmlevel = %d ORDER BY %s %s LIMIT %d, %d", $search_value, $order_by, $order_dir, $start, $itemperpage);
             $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account_access WHERE gmlevel = %d", $search_value);
         }
-        elseif ($search_by === 'banned')
+        elseif ($search_by == 'banned')
         {
             $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE account.id = 0 OR `id` IN (SELECT `id` FROM account_banned) ORDER BY %s %s LIMIT %d, %d", $order_by, $order_dir, $start, $itemperpage);
             $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account WHERE `id` = 0 OR `id` IN (SELECT `id` FROM account_banned)");
         }
-        elseif ($search_by === 'failed_logins')
+        elseif ($search_by == 'failed_logins')
         {
             $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE failed_logins > %d ORDER BY %s %s LIMIT %d, %d", $search_value, $order_by, $order_dir, $start, $itemperpage);
             $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account WHERE failed_logins > %d", $search_value);
@@ -72,8 +72,8 @@ function browse_users()
         else
         {
             // default search case
-            $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE `account`.%s LIKE '\%%s\%' ORDER BY %s %s LIMIT %d, %d", $search_by, $search_value, $order_by, $order_dir, $start, $itemperpage);
-            $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE `account`.`%s` LIKE '\%%s\%'", $search_by, $search_value);
+            $query = $sqla->fetch("SELECT `account_access`.`gmlevel`, `account`.`username`, `account`.`id`, `account`.`expansion`, `account`.`email`, `account`.`joindate`, `account`.`failed_logins`, `account`.`locked`, `account`.`last_login`, `account`.`online`, `account`.`last_ip` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE `account`.%s LIKE '%%%s%%' ORDER BY %s %s LIMIT %d, %d", $search_by, $search_value, $order_by, $order_dir, $start, $itemperpage);
+            $query_1 = $sqla->fetch("SELECT count(*) AS `count` FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE `account`.`%s` LIKE '%%%s%%'", $search_by, $search_value);
         }
     }
     else
@@ -127,29 +127,29 @@ function browse_users()
 
     //---------------Page Specific Data Starts Here--------------------------
     $data_array = array();
-    if ($sqla->num_rows($query))
-    foreach ($query as $data)
-    {
-        $data->gmlevel = (!is_null($data->gmlevel)) ? $data->gmlevel : 0; //normally, gmlvl0 accs dont have entry in account_access, so set default gmlevel
-        if (($user_lvl >= $data->gmlevel)||($user_name == $data->username))
+    if ($query)
+        foreach ($query as $data)
         {
-            $smarty->assign('hasEditPermission', true);
-
-            $exp_lvl_arr = id_get_exp_lvl();
-            
-            $data_additional = array("gm_level_name" => $gm_level_arr[$data->gmlevel][2], "exp_lvl" => $exp_lvl_arr[$data->expansion][2], "email_short" => substr($data->email,0,15));
-
-
-            if ($showcountryflag)
+            $data->gmlevel = (!is_null($data->gmlevel)) ? $data->gmlevel : 0; //normally, gmlvl0 accs dont have entry in account_access, so set default gmlevel
+            if (($user_lvl >= $data->gmlevel)||($user_name == $data->username))
             {
-                $country = misc_get_country_by_ip($data->last_ip);
-                $data_additional['country_code'] = $country['code'];
-                $data_additional['country'] = $country['country'];
+                $smarty->assign('hasEditPermission', true);
+
+                $exp_lvl_arr = id_get_exp_lvl();
+                
+                $data_additional = array("gm_level_name" => $gm_level_arr[$data->gmlevel][2], "exp_lvl" => $exp_lvl_arr[$data->expansion][2], "email_short" => substr($data->email,0,15));
+
+
+                if ($showcountryflag)
+                {
+                    $country = misc_get_country_by_ip($data->last_ip);
+                    $data_additional['country_code'] = $country['code'];
+                    $data_additional['country'] = $country['country'];
+                }
+                
+                $data_array[] = array_merge(get_object_vars($data), $data_additional);
             }
-            
-            $data_array[] = array_merge(get_object_vars($data), $data_additional);
         }
-    }
     $smarty->assign('data_array', $data_array);
 
     if ($expansion_select || $showcountryflag)
@@ -528,10 +528,15 @@ function edit_user()
     $data = get_object_vars($result[0]);
 
     $refguid = $sqlm->fetch("SELECT InvitedBy FROM mm_point_system_invites WHERE PlayersAccount = %d", $data['id']);
-    $refguid = $refguid[0]->InvitedBy;
+    $refguid = ($refguid) ? $refguid[0]->InvitedBy : 0;
     
-    $referred_by = $sqlc->fetch("SELECT name FROM characters WHERE guid = %d", $refguid);
-    $referred_by = $referred_by[0]->name;
+    if ($refguid)
+    {
+        $referred_by = $sqlc->fetch("SELECT name FROM characters WHERE guid = %d", $refguid);
+        $referred_by = $referred_by[0]->name;
+    }
+    else
+        $referred_by = "";
     
     $smarty->assign('action', 'edit_user');
     $smarty->assign('lang_global', $lang_global);
@@ -557,18 +562,23 @@ function edit_user()
                 $gmlevel_options[$level[0]] = $level[1];
                 
         $smarty->assign('gmlevel_options', $gmlevel_options);
-        $smarty->assign('gmlevelname', id_get_gm_level($data.gmlevel));
+        $smarty->assign('gmlevelname', id_get_gm_level($data['gmlevel']));
         
         $que = $sqla->fetch("SELECT bandate, unbandate, bannedby, banreason FROM account_banned WHERE id = %d ORDER BY unbandate DESC",$id);
         if ($sqla->num_rows())
         {
             $ban_info = " From:".date('d-m-Y G:i', $que[0]->bandate)." till:".date('d-m-Y G:i', $que[0]->unbandate)."<br />by ".$que[0]->bannedby;
             $smarty->assign('ban_checked', true);
+            $ban_reason = $que[0]->banreason;
+            
         }
         else
+        {
             $ban_info    = "";
+            $ban_reason  = "";
+        }
         $smarty->assign('ban_info', $ban_info);
-        $smarty->assign('banreason', $que[0]->banreason);
+        $smarty->assign('banreason', $ban_reason);
 
         if ($expansion_select)
         {
@@ -576,7 +586,7 @@ function edit_user()
             $smarty->assign('expansion_options', $expansion_options);
         }
         
-        $smarty->assign('lock_checked', $lock_checked);
+        $smarty->assign('lock_checked', $data['locked']);
 
         $query = $sqla->fetch("SELECT SUM(numchars) AS `sum` FROM realmcharacters WHERE acctid = %d", $id);
         $tot_chars = $query[0]->sum;

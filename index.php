@@ -72,6 +72,7 @@
      * Get page from $_GET and include it
      */
     $page = 'index'; //default page
+        
     if (isset($_GET['page']))
         if (file_exists('inc/'.sanitize_paranoid_string($_GET['page']).'.php'))
             $page = sanitize_paranoid_string($_GET['page']);

@@ -63,7 +63,7 @@ function top100()
             if ($type === 'level')
             {
                 $guild_name = $sqlc->fetch("SELECT name FROM guild WHERE guildid = %d", $char->gname);
-                $guild_name = $guild_name[0]->name;
+                $guild_name = ($guild_name[0]) ? $guild_name[0]->name : "";
                 $days  = floor(round($char->totaltime / 3600)/24);
                 $hours = round($char->totaltime / 3600) - ($days * 24);
                 $time = '';

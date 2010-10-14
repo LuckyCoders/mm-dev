@@ -40,6 +40,8 @@
         //set the momentarily relative scriptname with args
         $current_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
+    if (!isset($user_lvl))
+        $user_lvl = -1;
     
     function getPermissions($page)
     {     

@@ -1345,8 +1345,7 @@ function char_achievements()
                 </div>
                 <br />';
             
-            require_once 'core/char/char_footer.php';
-          
+     
             $output .= '
                 <br />
             </center>

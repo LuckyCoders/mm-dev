@@ -6,20 +6,20 @@ require_once 'libs/char.lib.php';
 //##############################################################################################################
 function edit_user()
 {
-    global $lang_edit, $lang_global, $user_name, $user_id, $characters_db, $expansion_select, $server, $developer_test_mode, $multi_realm_mode, $sqlm, $sqlc, $sqla, $smarty;
+    global $lang_edit, $realm_id, $lang_global, $user_name, $user_id, $characters_db, $expansion_select, $server, $developer_test_mode, $multi_realm_mode, $sqlm, $sqlc, $sqla, $smarty;
 
     if (!getPermission('read'))
         redirect('index.php?page=login&error=5');
 
 
     $refguid = $sqlm->fetch("SELECT InvitedBy FROM mm_point_system_invites WHERE PlayersAccount = %d", $user_id);
-    if ($refguid[0]->InvitedBy)
+    if ($refguid && !empty($refguid[0]->InvitedBy))
     {
         $referred_by = $sqlc->fetch("SELECT name FROM characters WHERE guid = %d", $refguid[0]->InvitedBy);
         $referred_by = $referred_by[0]->name;
     }
     else
-        $referred_by = NULL;
+        $referred_by = "";
     
     if ($acc = $sqla->fetch("SELECT email, gmlevel, joindate, expansion, last_ip FROM account LEFT JOIN account_access ON account.id=account_access.id WHERE username = '%s'", $user_name))
     {
@@ -65,7 +65,7 @@ function edit_user()
 
             $chardata = array();
             foreach ($result as $char)
-                $chardata[] = array_merge(get_object_vars($char), array("realmid" => $realm->id, "racename" => char_get_race_name($char->race), "classname" => char_get_class_name($char->class), "lvlcolor" => char_get_level_color($char->level)));
+                $chardata[] = array_merge(get_object_vars($char), array("realmid" => $realm_id, "racename" => char_get_race_name($char->race), "classname" => char_get_class_name($char->class), "lvlcolor" => char_get_level_color($char->level)));
 
             $realmdata = array(array("realmname" => "", "count" => $sqlc->num_rows($result), "cdata" => $chardata)); //make it similiar to multirealm code so we can use same template code to display it
         }
@@ -79,7 +79,7 @@ function edit_user()
                     $lang = explode('.', $file);
                     if(isset($lang[1]) && $lang[1] == 'php')
                     {
-                        $tmp .= '
+                        $tmp = '
                                                     <option value="'.$lang[0].'"';
                         if (isset($_COOKIE['lang']) && ($_COOKIE['lang'] == $lang[0]))
                             $tmp .= ' selected="selected" ';
@@ -99,7 +99,7 @@ function edit_user()
                     if (($file == '.') || ($file == '..') || ($file == '.htaccess') || ($file == 'index.html') || ($file == '.svn'));
                     else
                     {
-                        $tmp .= '
+                        $tmp = '
                                                     <option value="'.$file.'"';
                         if (isset($_COOKIE['theme']) && ($_COOKIE['theme'] == $file))
                             $tmp .= ' selected="selected" ';
@@ -124,21 +124,19 @@ function edit_user()
 //#############################################################################################################
 function doedit_user()
 {
-    global $user_name, $sqla;
+    global $user_name, $sqla, $defaultoption;
 
     if (!getPermission('read'))
         redirect('index.php?page=login&error=5');
     
     if ((empty($_POST['pass'])||($_POST['pass'] === ''))
-        && (empty($_POST['mail'])||($_POST['mail'] === ''))
-        && (empty($_POST['expansion'])||($_POST['expansion'] === ''))
-        && (empty($_POST['referredby'])||($_POST['referredby'] === '')))
+        && (empty($_POST['mail'])||($_POST['mail'] === '')))
         redirect('index.php?page=edit&error=1');
 
     $new_pass = (sanitize_paranoid_string($_POST['pass']) == sha1(strtoupper($user_name).':******')) ? '' : "sha_pass_hash = '".sanitize_paranoid_string($_POST['pass'])."',";
     $new_mail = sanitize_sql_string($_POST['mail']);
-    $new_expansion = sanitize_int(trim($_POST['expansion']));
-    $referredby = sanitize_paranoid_string(trim($_POST['referredby']));
+    $new_expansion = (empty($_POST['expansion'])) ? $defaultoption : sanitize_int(trim($_POST['expansion']));
+    $referredby = (empty($_POST['referredby'])) ? "" : sanitize_paranoid_string(trim($_POST['referredby']));
 
     if (strlen($new_mail) < 225);
     else

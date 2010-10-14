@@ -69,7 +69,7 @@
             $items[] = array('filename' => 'index.php?page=edit', 'name' => $lang_header['edit_my_acc']);
             $items[] = array('filename' => 'index.php?page=logout', 'name' => $lang_header['logout']);
         }
-        $menu[] = array('link' => 'edit.php', 'name' => $lang_header['my_acc'], 'items' => $items);        
+        $menu[] = array('link' => 'index.php?page=edit', 'name' => $lang_header['my_acc'], 'items' => $items);        
         $smarty->assign('topmenu',$menu);
         $smarty->assign('user_name',$user_name);
         $smarty->assign('user_lvl_name',$user_lvl_name);

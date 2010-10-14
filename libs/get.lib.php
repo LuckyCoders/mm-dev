@@ -91,7 +91,7 @@ function id_get_gm_level($id)
     if(isset($gm_level_arr[$id]))
         return $gm_level_arr[$id][1];
     else
-        return($lang_id_tab['unknown']);
+        return ($lang_id_tab['unknown']);
 }
 
 
