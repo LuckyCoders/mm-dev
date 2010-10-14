@@ -283,7 +283,7 @@ $menu_array = array
   (                       '#',      'tools', array
     (
       array(       'index.php?page=user',   'accounts', 2,2,2,5),
-      array(  'index.php?page=char_list', 'characters', 2,5,5,5),
+      array(  'index.php?page=characters', 'characters', 2,5,5,5),
       array(	  'index.php?page=cheat',       'cheat',2,0,0,0),
       array( 'index.php?page=ehrefarmer',  'ehrefarmer',2,0,0,0),
       array(    'index.php?page=command',    'command', 0,5,5,5),

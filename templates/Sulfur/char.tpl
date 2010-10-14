@@ -246,11 +246,8 @@
     {/if}
                             </table>
                         </div>
-                        <br />
                     </div>
                     <br />
-                    <br />
-                </center>
 {elseif $action eq 'char_spell'}
                         <center>
                             <div id="tab_content">
@@ -560,139 +557,11 @@
                             </div>
                             </div>
                             <br />
-{elseif $action eq 'char_achieve'}
+{elseif $action eq 'char_extra'}
             <center>
-                <script type="text/javascript">
-    {literal}                        function expand(thistag)
-                    {
-                        var i = 0;
-    {/literal}
-                        %%REPLACE%%
-    {literal}
-                        if (thistag == 'tsummary')
-                        {
-    {/literal}
-                            document.getElementById('tsummary').style.display="table";
-                            document.getElementById('divsummary').innerHTML = '[-] '{$lang_char.summary}' ;
-    {literal}                        for(x in main_cats)
-                            {
-                                if(document.getElementById(main_cats[x]).style.display=="table")
-                                {
-                                    document.getElementById(main_cats[x]).style.display="none";
-                                    document.getElementById(main_cats_achieve[x]).style.display="none";
-                                    document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
-                                }
-                            }
-                            for(x in main_sub_cats)
-                            {
-                                if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
-                                {
-                                    document.getElementById(main_sub_cats_achieve[x]).style.display="none";
-                                    document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (document.getElementById('tsummary').style.display="table")
-                            {
-                                document.getElementById('tsummary').style.display="none";
-    {/literal}
-                                document.getElementById('divsummary').innerHTML = '[+] {$lang_char.summary}';
-    {literal}
-                            }
-                            for(x in main_cats)
-                            {
-                                if (main_cats[x] == thistag)
-                                {
-                                    i = 1;
-                                }
-                            }
-
-                            if (i == 1)
-                            {
-                                for(x in main_cats)
-                                {
-                                    if (main_cats[x] == thistag)
-                                    {
-                                        if(document.getElementById(main_cats[x]).style.display=="table")
-                                        {
-                                            document.getElementById(main_cats[x]).style.display="none";
-                                            document.getElementById(main_cats_achieve[x]).style.display="none";
-                                            document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
-                                            document.getElementById('tsummary').style.display="table";
-    {/literal}
-                                            document.getElementById('divsummary').innerHTML = '[-] {$lang_char.summary}';
-    {literal}
-                                        }
-                                        else
-                                        {
-                                            document.getElementById(main_cats[x]).style.display="table";
-                                            document.getElementById(main_cats_achieve[x]).style.display="table";
-                                            document.getElementById(main_cats_div[x]).innerHTML = '[-] ' + main_cats_name[x];
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(document.getElementById(main_cats[x]).style.display=="table")
-                                        {
-                                            document.getElementById(main_cats[x]).style.display="none";
-                                            document.getElementById(main_cats_achieve[x]).style.display="none";
-                                            document.getElementById(main_cats_div[x]).innerHTML = '[+] ' + main_cats_name[x];
-                                        }
-                                    }
-                                }
-                                for(x in main_sub_cats)
-                                {
-                                    if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
-                                    {
-                                        document.getElementById(main_sub_cats_achieve[x]).style.display="none";
-                                        document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
-                                    }
-                                }
-                            }
-                            else if (i == 0)
-                            {
-                                for(x in main_sub_cats)
-                                {
-                                    if (main_sub_cats[x] == thistag)
-                                    {
-                                        if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
-                                        {
-                                            document.getElementById(main_sub_cats_achieve[x]).style.display="none";
-                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
-                                        }
-                                        else
-                                        {
-                                            document.getElementById(main_sub_cats_achieve[x]).style.display="table";
-                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[-] ' + main_sub_cats_name[x];
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(document.getElementById(main_sub_cats_achieve[x]).style.display=="table")
-                                        {
-                                            document.getElementById(main_sub_cats_achieve[x]).style.display="none";
-                                            document.getElementById(main_sub_cats_div[x]).innerHTML = '[+] ' + main_sub_cats_name[x];
-                                        }
-                                    }
-                                }
-                                for(x in main_cats)
-                                {
-                                    if(document.getElementById(main_cats_achieve[x]).style.display=="table")
-                                    {
-                                        document.getElementById(main_cats_achieve[x]).style.display="none";
-                                    }
-                                }
-                            }
-                        }
-                    }
-    {/literal}
-                </script>
-                <center>
-                    <div id="tab_content">
-                        <h1>{$lang_char.achievements}</h1>
-                        <br />
+                <div id="tab_content">
+                    <h1>{$lang_char.extra}</h1>
+                    <br />
     {* char header! *}
                         <div id="tab">
                             <ul>
@@ -720,20 +589,32 @@
                                 - lvl {$char_additional.lvlcolor}
                             </font>
     {* end char header! *}
-                        <br /><br />
-                        <table class="top_hidden" style="width: 90%;">
-                            <tr>
-                                <td width="30%">
-                                </td>
-                                %%REPLACE_POINTS%%
-                                <td align="right">
-                                    <form action="char_achieve.php?id={$id}&amp;realm={$realmid}" method="post" name="form">
-                                        {$lang_char.show} :
-                                        {html_options name=show_type options=$show_type_options selected=$show_type}
-                                    </form>
-                                </td>
-                                <td align="right">
-    
+                    <br /><br />
+                    <table class="lined" style="width: 450px;">
+                        <tr>
+                            <th width="15%">{$lang_char.icon}</th>
+                            <th width="15%">{$lang_char.quantity}</th>
+                            <th width="70%">{$lang_char.name}</th>
+                        </tr>
+    {foreach from=$items item=item}
+                        <tr valign="center">
+                            <td>
+                                <a style="padding:2px;" href="{$item.link}" target="_blank">
+                                    <img src="{$item.icon}" alt="{$item.alt}" class="icon_border_0" />
+                                </a>
+                            </td>
+                            <td>
+                                {$item.count}
+                            </td>
+                            <td>
+                                <span onmousemove="toolTip('{$item.bag_desc}', 'item_tooltip')" onmouseout="toolTip()">{$item.name}</span>
+                            </td>
+                        </tr>
+    {/foreach}
+                    </table>
+                </div>
+            </div>
+            <br />
 {elseif $action eq ''}
 {/if}
 
