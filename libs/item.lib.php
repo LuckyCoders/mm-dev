@@ -6,8 +6,6 @@ error_reporting(E_ALL);
 
 function get_itemset_name($id, &$sqlm=0)
 {
-    global $mmfpm_db;
-
     if (empty($sqlm))
     {
         global $sqlm;
@@ -20,8 +18,12 @@ function get_itemset_name($id, &$sqlm=0)
 //#############################################################################
 //generate item border from item_template.entry
 
-function get_item_border($item_id, &$sqlw)
+function get_item_border($item_id, &$sqlw=0)
 {
+    global $world_db;
+    if (empty($sqlw))
+        global $sqlw;
+        
     if($item_id)
     {
         $result = $sqlw->fetch("SELECT Quality FROM item_template WHERE entry = '%d'", $item_id);
