@@ -277,7 +277,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                                 <br /><br />
@@ -344,7 +344,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                         <br /><br />
@@ -405,7 +405,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                             <br /><br />
@@ -480,7 +480,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                                 <br /><br />
@@ -586,7 +586,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                     <br /><br />
@@ -644,7 +644,7 @@
                                 {$char.name|escape:'html'} -
                                 <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
                                 <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
-                                - lvl {$char_additional.lvlcolor}
+                                -lvl {$char.level}
                             </font>
     {* end char header! *}
                         <br /><br />
@@ -772,7 +772,174 @@
                     </div>
                 </div>
                 <br />
-{elseif $action eq 'aa'}
+{elseif $action eq 'char_inv'}
+            <center>
+                <div id="tab_content">
+                    <h1>{$lang_char.inventory}</h1>
+                    <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char.level}
+                            </font>
+    {* end char header! *}
+                            <br /><br />
+                            <table class="lined" style="width: 700px;">
+                                <tr>
+    {foreach from=$bags item=bag}
+                                    <th>
+        {if $bag.isEquipped}
+                                        <a style="padding:2px;" href="{$itemdatasite}{$bag.id}" target="_blank">
+                                            <img class="bag_icon" src="{$bag.icon}" alt="" />
+                                        </a>
+                                        {$lang_item.bag} {$bag.i}<br />
+                                        <font class="small">{$bag.slots} {$lang_item.slots}</font>
+        {/if}
+                                    </th>
+    {/foreach}
+                                </tr>
+                                <tr>
+    {foreach from=$bagslots item=bagslot}
+                                    <td class="bag" valign="bottom" align="center">
+                                        <div style="width:172px;height:{$bagslot.height}px;">
+        {if $bagslot.dsp}
+                                            <div class="no_slot"></div>
+        {/if}
+        {foreach from=$bagslot.bagposis item=posi}
+                                            <div style="left:{$posi.left}px;top:{$posi.top}px;">
+                                                <a style="padding:2px;" href="{$itemdatasite}{$posi.itemid}" target="_blank">
+                                                    <img src="{$posi.itemicon}" alt="" />
+                                                </a>
+                                                <div style="width:25px;margin:-20px 0px 0px 18px;color: black; font-size:14px">{if $posi.item eq 1}{else}{$posi.item}{/if}</div>
+                                                <div style="width:25px;margin:-21px 0px 0px 17px;font-size:14px">{if $posi.item eq 1}{else}{$posi.item}{/if}</div>
+                                            </div>
+        {/foreach}
+                                        </div>
+                                    </td>
+    {/foreach}
+                                </tr>
+                                <tr>
+                                    <th colspan="2" align="left">
+                                        <img class="bag_icon" src="{$emptysloticon}" alt="" align="middle" style="margin-left:100px;" />
+                                        <font style="margin-left:30px;">{$lang_char.backpack}</font>
+                                    </th>
+                                    <th colspan="2">
+                                        {$lang_char.bank_items}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="bag" align="center" height="220px">
+                                        <div style="width:172px;height:164px;">
+    {foreach from=$items item=item}
+                                            <div style="left:{$item.left}px;top:{$item.top}px;">
+                                                <a style="padding:2px;" href="{$itemdatasite}{$item.itemid}" target="_blank">
+                                                    <img src="{$item.itemicon}" alt="" />
+                                                </a>
+                                                <div style="width:25px;margin:-20px 0px 0px 18px;color: black; font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                                <div style="width:25px;margin:-21px 0px 0px 17px;font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                            </div>
+    {/foreach}
+                                        </div>
+                                        <div style="text-align:right;width:168px;background-image:none;background-color:#393936;padding:2px;">
+                                            <b>
+                                                {$money.g}<img src="img/gold.gif" alt="" align="middle" />
+                                                {$money.s}<img src="img/silver.gif" alt="" align="middle" />
+                                                {$money.c}<img src="img/copper.gif" alt="" align="middle" />
+                                            </b>
+                                        </div>
+                                    </td>
+                                    <td colspan="2" class="bank" align="center">
+                                        <div style="width:301px;height:164px;">
+    {foreach from=$bankitems item=item}
+                                            <div style="left:{$item.left}px;top:{$item.top}px;">
+                                                <a style="padding:2px;" href="{$itemdatasite}{$item.itemid}" target="_blank">
+                                                    <img src="{$item.itemicon}" alt="" />
+                                                </a>
+                                                <div style="width:25px;margin:-20px 0px 0px 18px;color: black; font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                                <div style="width:25px;margin:-21px 0px 0px 17px;font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                            </div>
+    {/foreach}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+    {foreach from=$bankbags item=bag}
+                                    <th>
+        {if $bag.isEquipped}
+                                        <a style="padding:2px;" href="{$item_datasite}{$bag.itemid}" target="_blank">
+                                            <img class="bag_icon" src="{$bag.itemicon}" alt="" />
+                                        </a>
+                                        {$lang_item.bag} {$bag.i}<br />
+                                        <font class="small">{$bag.slots} {$lang_item.slots}</font>
+        {/if}
+                                    </th>
+    {/foreach}
+                                </tr>
+                                <tr>
+    {foreach from=$bankslots item=bankslot}
+        {if $bankslot.i eq 5}
+                                </tr>
+            {foreach from=$bankslot.bankbags item=bankbag}
+                                        <th>
+                {if $bankbag.isEquipped}
+                                            <a style="padding:2px;" href="{$item_datasite}{$id}" target="_blank">
+                                                <img class="bag_icon" src="{$bankbag.icon}" alt="" />
+                                            </a>
+                                            {$lang_item.bag} {$bankbag.i}<br />
+                                            <font class="small">{$bankbag.slots} {$lang_item.slots}</font>
+                {/if}
+                                        </th>
+            {/foreach}
+                                        <th>
+                                        </th>
+                                    </tr>
+                                    <tr>
+        {/if}
+                                        <td class="bank" align="center">
+                                            <div style="width:172px;height:{$bankslot.height}px;">
+        {if $bankslot.dsp}
+                                                <div class="no_slot"></div>
+        {/if}
+        {foreach from=$bankslot.bankitems item=item}
+                                                <div style="left:{$item.left}px;top:{$item.top}px;">
+                                                    <a style="padding:2px;" href="{$itemdatasite}{$item.itemid}" target="_blank">
+                                                        <img src="{$item.itemicon}" alt="" />
+                                                    </a>
+                                                    <div style="width:25px;margin:-20px 0px 0px 18px;color: black; font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                                    <div style="width:25px;margin:-21px 0px 0px 17px;font-size:14px">{if $item.item eq 1}{else}{$item.item}{/if}</div>
+                                                </div>
+        {/foreach}
+                                            </div>
+                                        </td>
+    {/foreach}
+                                        <td class="bank"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+{elseif $action eq ''}
 {/if}
 
 {* char footer *}

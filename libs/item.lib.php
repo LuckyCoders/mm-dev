@@ -125,7 +125,7 @@ function get_item_icon($itemid, &$sqlm=0, &$sqlw=0)
             $item = '';
     }
     else
-        $item = '';
+       $item = '';
 
     if($get_icons_from_web)
     {

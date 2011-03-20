@@ -1185,6 +1185,233 @@ function char_friends()
     $smarty->clear_all_assign();
 }
 
+//#############################################################################
+// SHOW INV. AND BANK ITEMS
+//#############################################################################
+function char_inv()
+{
+    global $lang_global, $lang_char, $lang_item, $realm_id, $characters_db, $world_db, $sqlm, $sqla, $user_lvl, $user_name, $item_datasite, $smarty;
+            
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
+    // this page uses wowhead tooltips
+    wowhead_tt();
+    
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+    
+    // getting character data from database
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender, money FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    // no point going further if character does not exist
+    if ($sqlc->num_rows())
+    {
+        $char = get_object_vars($result[0]);
+    
+        $smarty->assign('action', 'char_inv');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('lang_item', $lang_item);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+        $smarty->assign('itemdatasite', $item_datasite);
+        $smarty->assign('emptysloticon', get_item_icon(3960));
+        
+        // we get user permissions first
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+
+        // check user permission
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            // main data that we need for this page, character inventory
+            $result = $sqlc->fetch("SELECT ci.bag, ci.slot, ci.item, ii.itemEntry, ii.count as stack_count
+                                    FROM character_inventory ci INNER JOIN item_instance ii on ii.guid = ci.item
+                                    WHERE ci.guid = %d ORDER BY ci.bag,ci.slot", $id);
+
+            // character bags, 1 main + 4 additional
+            $bag = array
+            (
+                0=>array(),
+                1=>array(),
+                2=>array(),
+                3=>array(),
+                4=>array()
+            );
+
+            // character bang, 1 main + 7 additional
+            $bank = array
+            (
+                0=>array(),
+                1=>array(),
+                2=>array(),
+                3=>array(),
+                4=>array(),
+                5=>array(),
+                6=>array(),
+                7=>array()
+            );
+
+            // this is where we will put items that are in main bag
+            $bag_id = array();
+            // this is where we will put items that are in main bank
+            $bank_bag_id = array();
+            // this is where we will put items that are in character bags, 4 arrays, 1 for each
+            $equiped_bag_id = array(0,0,0,0,0);
+            // this is where we will put items that are in bank bangs, 7 arrays, 1 for each
+            $equip_bnk_bag_id = array(0,0,0,0,0,0,0,0);
+
+            // we load the things in each bag slot
+            foreach ($result as $slot)
+            {
+                if ($slot->bag == 0 && $slot->slot > 18)
+                {
+                    if($slot->slot < 23) // SLOT 19 TO 22 (Bags)
+                    {
+                        $bag_id[$slot->item] = ($slot->slot-18);
+                        $container = $sqlw->fetch("SELECT ContainerSlots FROM item_template WHERE entry = %d", $slot->itemEntry);
+                        $equiped_bag_id[$slot->slot-18] = array($slot->itemEntry, $container[0]->ContainerSlots, $slot->stack_count);
+                    }
+                    elseif($slot->slot < 39) // SLOT 23 TO 38 (BackPack)
+                    {
+                        if(isset($bag[0][$slot->slot-23]))
+                            $bag[0][$slot->slot-23][0]++;
+                        else 
+                            $bag[0][$slot->slot-23] = array($slot->itemEntry, 0, $slot->stack_count);
+                    }
+                    elseif($slot->slot < 67) // SLOT 39 TO 66 (Bank)
+                        $bank[0][$slot->slot-39] = array($slot->itemEntry, 0, $slot->stack_count);
+                    elseif($slot->slot < 74) // SLOT 67 TO 73 (Bank Bags)
+                    {
+                        $bank_bag_id[$slot->item] = ($slot->slot-66);
+                        $container = $sqlw->fetch("SELECT ContainerSlots FROM item_template WHERE entry = %d", $slot->itemEntry);
+                        $equip_bnk_bag_id[$slot->slot-66] = array($slot->itemEntry, $container[0]->ContainerSlots, $slot->stack_count);
+                    }
+                }
+                else
+                {
+                    // Bags
+                    if (isset($bag_id[$slot->bag]))
+                    {
+                        if(isset($bag[$bag_id[$slot->bag]][$slot->slot]))
+                            $bag[$bag_id[$slot->bag]][$slot->slot][1]++;
+                        else
+                            $bag[$bag_id[$slot->bag]][$slot->slot] = array($slot->itemEntry,0,$slot->stack_count);
+                    }
+                    // Bank Bags
+                    elseif (isset($bank_bag_id[$slot->bag]))
+                        $bank[$bank_bag_id[$slot->bag]][$slot->slot] = array($slot->itemEntry,0,$slot->stack_count);
+                }
+            }
+            unset($slot);
+            unset($bag_id);
+            unset($bank_bag_id);
+            unset($result);
+
+            // equipped bags
+            $bags = array();
+            for ($i = 1; $i < 5; ++$i)
+                $bags[] = array('isEquipped' => ($equiped_bag_id[$i] ? true : false), 'i' => $i, 'id' => $equiped_bag_id[$i][0], 'slots' => $equiped_bag_id[$i][1], 'icon' => get_item_icon($equiped_bag_id[$i][0]));
+            $smarty->assign('bags', $bags);
+
+            // equipped bag slots
+            $bagslots = array();
+            for($t = 1; $t < 5; ++$t)
+            {
+                $dsp = $equiped_bag_id[$t][1]%4;
+                $bagposis = array();
+                foreach ($bag[$t] as $pos => $item)
+                    $bagposis[] = array('left' => (($pos+$dsp)%4*42), 'top' => (floor(($pos+$dsp)/4)*41), 'itemid' => $item[0], 'item' => $item[2], 'itemicon' => get_item_icon($item[0]));
+
+                $bagslots[] = array('dsp' => $dsp, 'height' => (ceil($equiped_bag_id[$t][1]/4)*41), 'bagposis' => $bagposis);
+            }
+            $smarty->assign('bagslots', $bagslots);
+            unset($equiped_bag_id);
+            
+            // inventory items
+            $items = array();
+            foreach ($bag[0] as $pos => $item)
+                $items[] = array('left' => ($pos%4*42), 'top' => (floor($pos/4)*41), 'itemid' => $item[0], 'item' => $item[2], 'itemicon' => get_item_icon($item[0]));
+            $smarty->assign('items', $items);
+            unset($bag);
+            
+            $smarty->assign('money', array('g' => substr($char['money'],  0, -4), 's' => substr($char['money'], -4, -2), 'c' => substr($char['money'], -2)));
+
+            // bank items
+            $bankitems = array();
+            foreach ($bank[0] as $pos => $item)
+                $bankitems[] = array('left' => ($pos%7*43), 'top' => (floor($pos/7)*41), 'itemid' => $item[0], 'item' => $item[2], 'itemicon' => get_item_icon($item[0]));
+            $smarty->assign('bankitems', $items);
+
+            // equipped bank bags, first 4
+            $bankbags = array();
+            for ($i = 1; $i < 5; ++$i)
+                $bankbags[] = array('isEquipped' => ($equip_bnk_bag_id[$i] ? true : false), 'itemid' => $equip_bnk_bag_id[$i][0], 'i' => $i, 'slots' => $equip_bnk_bag_id[$i][1], 'itemicon' => get_item_icon($equip_bnk_bag_id[$i][0]));
+            $smarty->assign('bankbags', $bankbags);
+
+            // equipped bank bag slots
+            $bankslots = array();
+            for ($t = 1; $t < 8; ++$t)
+            {
+                // equipped bank bags, last 3
+                $bankbags = array();
+                if ($t === 5)
+                    for ($i = 5; $i < 8; ++$i)
+                        $bankbags[] = array('isEquipped' => $equip_bnk_bag_id[$i], 'i' => $i, 'id' => $equip_bnk_bag_id[$i][0], 'slots' => $equip_bnk_bag_id[$i][1], 'icon' => get_item_icon($equip_bnk_bag_id[$i][0]));
+
+                $dsp = $equip_bnk_bag_id[$t][1]%4;
+                
+                $bankitems = array();
+                foreach ($bank[$t] as $pos => $item)
+                    $bankitems[] = array('left' => (($pos+$dsp)%4*43), 'top' => (floor(($pos+$dsp)/4)*41), 'itemid' => $item[0], 'item' => $item[2], 'itemicon' => get_item_icon($item[0]));
+
+                $bankslots[] = array('dsp' => $dsp, 'i' => $t, 'height' => (ceil($equip_bnk_bag_id[$t][1]/4)*41), 'bankbags' => $bankbags, 'bankitems' => $bankitems);
+            }
+            $smarty->assign('bankslots', $bankslots);
+            unset($equip_bnk_bag_id);
+            unset($bank);
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
+
 
 //########################################################################################################################
 // MAIN
@@ -1244,6 +1471,9 @@ switch ($action)
         break;
     case "friends":
         char_friends();
+        break;
+    case "inv":
+        char_inv();
         break;
     default:
         char_main();
