@@ -615,7 +615,164 @@
                 </div>
             </div>
             <br />
-{elseif $action eq ''}
+{elseif $action eq 'char_friends'}
+            <center>
+                <div id="tab_content">
+                    <h1>{$lang_char.friends}</h1>
+                    <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char_additional.lvlcolor}
+                            </font>
+    {* end char header! *}
+                        <br /><br />
+                        <table class="hidden"  style="width: 1%;">
+                            <tr valign="top">
+                                <td>
+                                    <table class="lined" style="width: 1%;">
+    {if $hasFriends}
+                                        <tr>
+                                            <th colspan="7" align="left">{$lang_char.friends}</th>
+                                        </tr>
+                                        <tr>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=name&amp;dir={$dir}"{if $order_by eq 'name'} class="{$order_dir}"{/if}>{$lang_char.name}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=race&amp;dir={$dir}"{if $order_by eq 'race'} class="{$order_dir}"{/if}>{$lang_char.race}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=class&amp;dir={$dir}"{if $order_by eq 'class'} class="{$order_dir}"{/if}>{$lang_char.class}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=level&amp;dir={$dir}"{if $order_by eq 'level'} class="{$order_dir}"{/if}>{$lang_char.level}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=map&amp;dir={$dir}"{if $order_by eq 'map'} class="{$order_dir}"{/if}>{$lang_char.map}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=zone&amp;dir={$dir}"{if $order_by eq 'zone'} class="{$order_dir}"{/if}>{$lang_char.zone}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=online&amp;dir={$dir}"{if $order_by eq 'online'} class="{$order_dir}"{/if}>{$lang_char.online}</a></th>
+                                        </tr>
+        {foreach from=$friends item=friend}
+                                        <tr>
+                                            <td>
+                                                <a href="index.php?page=char&id={$friend.guid}">{$friend.name}</a>
+                                            </td>
+                                            <td><img src="img/c_icons/{$friend.race}-{$friend.gender}.gif" onmousemove="toolTip('{$friend.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td><img src="img/c_icons/{$friend.class}.gif" onmousemove="toolTip('{$friend.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td>{$friend.lvlcolor}</td>
+                                            <td class="small"><span onmousemove="toolTip('MapID:{$friend.map}', 'item_tooltip')" onmouseout="toolTip()">{$friend.mapname}</span></td>
+                                            <td class="small"><span onmousemove="toolTip('ZoneID:{$friend.zone}', 'item_tooltip')" onmouseout="toolTip()">{$friend.zonename}</span></td>
+                                            <td>{if $friend.online}<img src="img/up.gif" alt="" />{else}-{/if}</td>
+                                        </tr>
+        {/foreach}
+    {/if}
+    {if $hasMe}
+                                        <tr>
+                                            <th colspan="7" align="left">{$lang_char.friendof}</th>
+                                        </tr>
+                                        <tr>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=name&amp;dir={$dir}"{if $order_by eq 'name'} class="{$order_dir}"{/if}>{$lang_char.name}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=race&amp;dir={$dir}"{if $order_by eq 'race'} class="{$order_dir}"{/if}>{$lang_char.race}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=class&amp;dir={$dir}"{if $order_by eq 'class'} class="{$order_dir}"{/if}>{$lang_char.class}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=level&amp;dir={$dir}"{if $order_by eq 'level'} class="{$order_dir}"{/if}>{$lang_char.level}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=map&amp;dir={$dir}"{if $order_by eq 'map'} class="{$order_dir}"{/if}>{$lang_char.map}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=zone&amp;dir={$dir}"{if $order_by eq 'zone'} class="{$order_dir}"{/if}>{$lang_char.zone}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=online&amp;dir={$dir}"{if $order_by eq 'online'} class="{$order_dir}"{/if}>{$lang_char.online}</a></th>
+                                        </tr>
+        {foreach from=$rfriends item=rfriend}
+                                        <tr>
+                                            <td>
+                                                <a href="index.php?page=char&id={$rfriend.guid}">{$rfriend.name}</a>
+                                            </td>
+                                            <td><img src="img/c_icons/{$rfriend.race}-{$rfriend.gender}.gif" onmousemove="toolTip('{$rfriend.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td><img src="img/c_icons/{$rfriend.class}.gif" onmousemove="toolTip('{$rfriend.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td>{$rfriend.lvlcolor}</td>
+                                            <td class="small"><span onmousemove="toolTip('MapID:{$rfriend.map}', 'item_tooltip')" onmouseout="toolTip()">{$rfriend.mapname}</span></td>
+                                            <td class="small"><span onmousemove="toolTip('ZoneID:{$rfriend.zone}', 'item_tooltip')" onmouseout="toolTip()">{$rfriend.zonename}</span></td>
+                                            <td>{if $rfriend.online}<img src="img/up.gif" alt="" />{else}-{/if}</td>
+                                        </tr>
+        {/foreach}
+    {/if}
+                                        <script type="text/javascript">
+                                        // <![CDATA[
+                                          wrap();
+                                        // ]]>
+                                        </script>
+    {if $hasIgnored}
+                                        <tr>
+                                            <th colspan="7" align="left">{$lang_char.ignored}</th>
+                                        </tr>
+                                        <tr>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=name&amp;dir={$dir}"{if $order_by eq 'name'} class="{$order_dir}"{/if}>{$lang_char.name}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=race&amp;dir={$dir}"{if $order_by eq 'race'} class="{$order_dir}"{/if}>{$lang_char.race}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=class&amp;dir={$dir}"{if $order_by eq 'class'} class="{$order_dir}"{/if}>{$lang_char.class}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=level&amp;dir={$dir}"{if $order_by eq 'level'} class="{$order_dir}"{/if}>{$lang_char.level}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=map&amp;dir={$dir}"{if $order_by eq 'map'} class="{$order_dir}"{/if}>{$lang_char.map}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=zone&amp;dir={$dir}"{if $order_by eq 'zone'} class="{$order_dir}"{/if}>{$lang_char.zone}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=online&amp;dir={$dir}"{if $order_by eq 'online'} class="{$order_dir}"{/if}>{$lang_char.online}</a></th>
+                                        </tr>
+        {foreach from=$ignored item=igno}
+                                        <tr>
+                                            <td>
+                                                <a href="index.php?page=char&id={$igno.guid}">{$igno.name}</a>
+                                            </td>
+                                            <td><img src="img/c_icons/{$igno.race}-{$igno.gender}.gif" onmousemove="toolTip('{$igno.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td><img src="img/c_icons/{$igno.class}.gif" onmousemove="toolTip('{$igno.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td>{$igno.lvlcolor}</td>
+                                            <td class="small"><span onmousemove="toolTip('MapID:{$igno.map}', 'item_tooltip')" onmouseout="toolTip()">{$igno.mapname}</span></td>
+                                            <td class="small"><span onmousemove="toolTip('ZoneID:{$igno.zone}', 'item_tooltip')" onmouseout="toolTip()">{$igno.zonename}</span></td>
+                                            <td>{if $igno.online}<img src="img/up.gif" alt="" />{else}-{/if}</td>
+                                        </tr>
+        {/foreach}
+    {/if}
+    {if $hasIgnoredMe}
+                                        <tr>
+                                            <th colspan="7" align="left">{$lang_char.ignoredby}</th>
+                                        </tr>
+                                        <tr>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=name&amp;dir={$dir}"{if $order_by eq 'name'} class="{$order_dir}"{/if}>{$lang_char.name}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=race&amp;dir={$dir}"{if $order_by eq 'race'} class="{$order_dir}"{/if}>{$lang_char.race}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=class&amp;dir={$dir}"{if $order_by eq 'class'} class="{$order_dir}"{/if}>{$lang_char.class}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=level&amp;dir={$dir}"{if $order_by eq 'level'} class="{$order_dir}"{/if}>{$lang_char.level}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=map&amp;dir={$dir}"{if $order_by eq 'map'} class="{$order_dir}"{/if}>{$lang_char.map}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=zone&amp;dir={$dir}"{if $order_by eq 'zone'} class="{$order_dir}"{/if}>{$lang_char.zone}</a></th>
+                                            <th width="1%"><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}&amp;order_by=online&amp;dir={$dir}"{if $order_by eq 'online'} class="{$order_dir}"{/if}>{$lang_char.online}</a></th>
+                                        </tr>
+        {foreach from=$rignored item=rigno}
+                                        <tr>
+                                            <td>
+                                                <a href="index.php?page=char&id={$rigno.guid}">{$rigno.name}</a>
+                                            </td>
+                                            <td><img src="img/c_icons/{$rigno.race}-{$rigno.gender}.gif" onmousemove="toolTip('{$rigno.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td><img src="img/c_icons/{$rigno.class}.gif" onmousemove="toolTip('{$rigno.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" /></td>
+                                            <td>{$rigno.lvlcolor}</td>
+                                            <td class="small"><span onmousemove="toolTip('MapID:{$rigno.map}', 'item_tooltip')" onmouseout="toolTip()">{$rigno.mapname}</span></td>
+                                            <td class="small"><span onmousemove="toolTip('ZoneID:{$rigno.zone}', 'item_tooltip')" onmouseout="toolTip()">{$rigno.zonename}</span></td>
+                                            <td>{if $rigno.online}<img src="img/up.gif" alt="" />{else}-{/if}</td>
+                                        </tr>
+        {/foreach}
+    {/if}
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br />
+{elseif $action eq 'aa'}
 {/if}
 
 {* char footer *}

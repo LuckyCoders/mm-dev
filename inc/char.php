@@ -1041,6 +1041,152 @@ function char_extra()
 }
 
 //########################################################################################################################
+// SHOW CHARACTERS FRIENDS
+//########################################################################################################################
+function char_friends()
+{
+    global $lang_global, $lang_char, $realm_id, $characters_db, $world_db, $auth_db, $sqla, $user_lvl, $user_name, $smarty;
+            
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+        
+    //==========================$_GET and SECURE=================================
+    $order_by = (isset($_GET['order_by'])) ? preg_replace("/[^a-zA-Z0-9_]/", "", $_GET['order_by']) : 'guid';
+    if (preg_match('/^[_[:lower:]]{1,12}$/', $order_by)); 
+    else 
+        $order_by = 'guid';
+
+    $dir = (isset($_GET['dir'])) ? sanitize_int($_GET['dir']) : 1;
+    if (preg_match('/^[01]{1}$/', $dir)); 
+    else 
+        $dir = 1;
+
+    $order_dir = ($dir) ? 'ASC' : 'DESC';
+    $dir = ($dir) ? 0 : 1;
+    //==========================$_GET and SECURE end=============================
+    $order_by_org = $order_by;
+    if ($order_by == 'map')
+        $order_by = 'map '.$order_dir.', zone';
+    elseif ($order_by === 'zone')
+        $order_by = 'zone '.$order_dir.', map';
+
+    // getting character data from database
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    if ($sqlc->num_rows())
+    {
+        $char = get_object_vars($result[0]);
+    
+        $smarty->assign('action', 'char_friends');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+        $smarty->assign('dir', $dir);
+        $smarty->assign('order_dir', $order_dir);
+        $smarty->assign('order_by_org', $order_by_org);
+        
+        // we get user permissions first
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+        if (($user_lvl > $owner_gmlvl) || ($owner_name === $user_name))
+        {
+            $result = $sqlc->fetch("SELECT name, race, class, map, zone, level, gender, online, account, guid FROM characters WHERE guid in (SELECT friend FROM character_social WHERE guid = %d and flags <= 1) ORDER BY %s %s", $id, $order_by, $order_dir);
+
+            if ($sqlc->num_rows())
+            {
+                $smarty->assign('hasFriends', true);
+                $friends = array();
+                foreach ($result as $data)
+                    $friends[] = array_merge(get_object_vars($data), array('lvlcolor' => char_get_level_color($data->level), 'racename' => char_get_race_name($data->race), 'classname' => char_get_class_name($data->class),
+                                            'mapname' => get_map_name($data->map), 'zonename' => get_zone_name($data->zone)));
+                $smarty->assign('friends', $friends);
+            }
+
+            $result = $sqlc->fetch("SELECT name, race, class, map, zone, level, gender, online, account, guid FROM characters WHERE guid in (SELECT guid FROM character_social WHERE friend = %d and flags <= 1) ORDER BY %s %s", $id, $order_by, $order_dir);
+
+            if ($sqlc->num_rows())
+            {
+                $smarty->assign('hasMe', true);
+
+                $rfriends = array();
+                foreach ($result as $data)
+                    $rfriends[] = array_merge(get_object_vars($data), array('lvlcolor' => char_get_level_color($data->level), 'racename' => char_get_race_name($data->race), 'classname' => char_get_class_name($data->class),
+                                            'mapname' => get_map_name($data->map), 'zonename' => get_zone_name($data->zone)));
+                $smarty->assign('rfriends', $rfriends);
+            }
+
+            $result = $sqlc->fetch("SELECT name, race, class, map, zone, level, gender, online, account, guid FROM characters WHERE guid in (SELECT friend FROM character_social WHERE guid = %d and flags > 1) ORDER BY %s %s", $id, $order_by, $order_dir);
+
+            if ($sqlc->num_rows())
+            {
+                $smarty->assign('hasIgnored', true);
+
+                $ignored = array();
+                foreach ($result as $data)
+                    $ignored[] = array_merge(get_object_vars($data), array('lvlcolor' => char_get_level_color($data->level), 'racename' => char_get_race_name($data->race), 'classname' => char_get_class_name($data->class),
+                                            'mapname' => get_map_name($data->map), 'zonename' => get_zone_name($data->zone)));
+                $smarty->assign('ignored', $ignored);
+            }
+
+            $result = $sqlc->fetch("SELECT name, race, class, map, zone, level, gender, online, account, guid FROM characters WHERE guid in (SELECT guid FROM character_social WHERE friend = %d and flags > 1) ORDER BY %s %s", $id, $order_by, $order_dir);
+
+            if ($sqlc->num_rows())
+            {
+                $smarty->assign('hasIgnored', true);
+
+                $ignored = array();
+                foreach ($result as $data)
+                    $ignored[] = array_merge(get_object_vars($data), array('lvlcolor' => char_get_level_color($data->level), 'racename' => char_get_race_name($data->race), 'classname' => char_get_class_name($data->class),
+                                            'mapname' => get_map_name($data->map), 'zonename' => get_zone_name($data->zone)));
+                $smarty->assign('ignored', $ignored);
+            }
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
+
+
+//########################################################################################################################
 // MAIN
 //########################################################################################################################
 
@@ -1095,6 +1241,9 @@ switch ($action)
         break;
     case "extra":
         char_extra();
+        break;
+    case "friends":
+        char_friends();
         break;
     default:
         char_main();
