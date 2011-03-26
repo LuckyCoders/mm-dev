@@ -1,9 +1,11 @@
 <?php
 error_reporting(E_ALL);
 require_once 'libs/char.lib.php';
+require_once 'libs/misc.lib.php';
 require_once 'libs/item.lib.php';
 require_once 'libs/spell.lib.php';
 require_once 'libs/map_zone.lib.php';
+require_once 'libs/skill.lib.php';
 
 //########################################################################################################################
 // SHOW GENERAL CHARACTERS INFO
@@ -1412,7 +1414,160 @@ function char_inv()
     $smarty->clear_all_assign();
 }
 
+//########################################################################################################################
+// SHOW CHARACTERS SKILLS
+//########################################################################################################################
+function char_skill()
+{
+    global $lang_global, $lang_char, $realm_id, $characters_db, $world_db, $sqlm, $sqla, $user_lvl, $user_name, $skill_datasite, $smarty;
+            
+    if (!getPermission('read'))
+        redirect('index.php?page=login&error=5');
+        
+    // this page uses wowhead tooltips
+    wowhead_tt();
+    
+    //former char_security.php
+    if (empty($_GET['id']))
+        redirect('index.php?page=char&error=1&id=NULL');
+    $id = sanitize_int($_GET['id']);
+    
+    if (empty($_GET['realm']))
+    {
+        $realmid = $realm_id;
+        global $sqlc, $sqlw;
+    }
+    else
+    {
+        $realmid = sanitize_int($_GET['realm']);
+        if (is_numeric($realmid))
+        {
+            $sqlc = new MySQL($characters_db[$realmid]);
+            $sqlw = new MySQL($world_db[$realmid]);
+        }
+        else
+        {
+            global $sqlc, $sqlw;
+            
+            $realmid = $realm_id;
+        }
+    }
+    //end former char_security.php
+    
+    //==========================$_GET and SECURE=================================
+    $order_by = (isset($_GET['order_by'])) ? preg_replace("/[^a-zA-Z0-9_]/", "", $_GET['order_by']) : 1;
+    if (preg_match('/^[_[:lower:]]{1,12}$/', $order_by)); 
+    else 
+        $order_by = 1;
 
+    $dir = (isset($_GET['dir'])) ? sanitize_int($_GET['dir']) : 1;
+    if (preg_match('/^[01]{1}$/', $dir)); 
+    else 
+        $dir = 1;
+
+    $order_dir = ($dir) ? 'ASC' : 'DESC';
+    $dir = ($dir) ? 0 : 1;
+    //==========================$_GET and SECURE end=============================
+    
+    // getting character data from database
+    $result = $sqlc->fetch("SELECT account, name, race, class, level, gender, money FROM characters WHERE guid = %d LIMIT 1", $id);
+
+    // no point going further if character does not exist
+    if ($sqlc->num_rows())
+    {
+        $char = get_object_vars($result[0]);
+    
+        $smarty->assign('action', 'char_skill');
+        $smarty->assign('lang_char', $lang_char);
+        $smarty->assign('lang_global', $lang_global);
+        $smarty->assign('id', $id);
+        $smarty->assign('realmid', $realmid);
+        $smarty->assign('char', $char);
+        $smarty->assign('skilldatasite', $skill_datasite);
+        $smarty->assign('title_colspan', ($user_lvl ? 3 : 2));
+        $smarty->assign('user_lvl', $user_lvl);
+        $smarty->assign('order_by', $order_by);
+        $smarty->assign('order_dir', $order_dir);
+        $smarty->assign('dir', $dir);
+        
+        // we get user permissions first
+        $owner_acc_id = $result[0]->account;
+        $result = $sqla->fetch("SELECT `username`, `gmlevel` FROM `account` LEFT JOIN `account_access` ON `account`.`id`=`account_access`.`id` WHERE `account`.`id` = %d ORDER BY `gmlevel` DESC LIMIT 1", $owner_acc_id);
+        $owner_name = $result[0]->username;
+        $owner_gmlvl = $result[0]->gmlevel;
+        if (empty($owner_gmlvl))
+            $owner_gmlvl = 0;
+
+        if (($user_lvl > $owner_gmlvl)||($owner_name === $user_name))
+        {
+            $skill_array = array();
+            $class_array = array();
+            $prof_1_array = array();
+            $prof_2_array = array();
+            $weapon_array = array();
+            $armor_array = array();
+            $language_array = array();
+
+            $skill_rank_array = array(
+                75 => $lang_char['apprentice'],
+                150 => $lang_char['journeyman'],
+                225 => $lang_char['expert'],
+                300 => $lang_char['artisan'],
+                375 => $lang_char['master'],
+                450 => $lang_char['inherent'],
+                385 => $lang_char['wise']
+            );
+
+            $result = $sqlc->fetch("SELECT skill, value, max FROM character_skills WHERE guid = %d", $id);
+
+            foreach ($result as $char_skill)
+            {
+                $temp = $char_skill->value;
+                $skill = $char_skill->skill;
+                $max = $char_skill->max;
+
+                if (skill_get_type($skill) == 6)
+                    array_push($weapon_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                elseif (skill_get_type($skill) == 7)
+                    array_push($class_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                elseif (skill_get_type($skill) == 8)
+                    array_push($armor_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                elseif (skill_get_type($skill) == 9)
+                    array_push($prof_2_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                elseif (skill_get_type($skill) == 10)
+                    array_push($language_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                elseif (skill_get_type($skill) == 11)
+                    array_push($prof_1_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+                else
+                    array_push($skill_array , array(($user_lvl ? $skill : ''), skill_get_name($skill), $temp, $max, (round(450*$temp/$max)-450)));
+            }
+
+            aasort($skill_array, $order_by, $dir);
+            aasort($class_array, $order_by, $dir);
+            aasort($prof_1_array, $order_by, $dir);
+            aasort($prof_2_array, $order_by, $dir);
+            aasort($weapon_array, $order_by, $dir);
+            aasort($armor_array, $order_by, $dir);
+            aasort($language_array, $order_by, $dir);
+
+            $smarty->assign('skill_rank_array', $skill_rank_array);
+            $smarty->assign('skill_array', $skill_array);
+            $smarty->assign('class_array', $class_array);
+            $smarty->assign('prof_1_array', $prof_1_array);
+            $smarty->assign('prof_2_array', $prof_2_array);
+            $smarty->assign('weapon_array', $weapon_array);
+            $smarty->assign('armor_array', $armor_array);
+            $smarty->assign('language_array', $language_array);
+        }
+        else
+            ;//error($lang_char['no_permission']);
+    }
+    else
+        ;//error($lang_char['no_char_found']);
+        
+    $smarty->display('char.tpl');
+    $smarty->clear_all_assign();
+}
 //########################################################################################################################
 // MAIN
 //########################################################################################################################
@@ -1474,6 +1629,9 @@ switch ($action)
         break;
     case "inv":
         char_inv();
+        break;
+    case "skill":
+        char_skill();
         break;
     default:
         char_main();

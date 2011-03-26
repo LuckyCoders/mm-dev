@@ -939,6 +939,162 @@
                             </div>
                         </div>
                         <br />
+{elseif $action eq 'char_skill'}
+            <center>
+                <div id="tab_content">
+                    <h1>{$lang_char.skills}</h1>
+                    <br />
+    {* char header! *}
+                        <div id="tab">
+                            <ul>
+                                <li><a href="index.php?page=char&id={$id}&amp;realm={$realmid}">{$lang_char.char_sheet}</a></li>
+                                <li><a href="index.php?page=char&action=inv&id={$id}&amp;realm={$realmid}">{$lang_char.inventory}</a></li>
+                                <li><a href="index.php?page=char&action=extra&id={$id}&amp;realm={$realmid}">{$lang_char.extra}</a></li>
+                                {if $char.level >= 10}<li><a href="index.php?page=char&action=talent&id={$id}&amp;realm={$realmid}">{$lang_char.talents}</a></li>{/if}
+                                <li><a href="index.php?page=char&action=achieve&id={$id}&amp;realm={$realmid}">{$lang_char.achievements}</a></li>
+                                <li><a href="index.php?page=char&action=rep&id={$id}&amp;realm={$realmid}">{$lang_char.reputation}</a></li>
+                                <li><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}">{$lang_char.skills}</a></li>
+                                <li><a href="index.php?page=char&action=quest&id={$id}&amp;realm={$realmid}">{$lang_char.quests}</a></li>
+        {if $char.class eq 3}
+                                <li><a href="index.php?page=char&action=pets&id={$id}&amp;realm={$realmid}">{$lang_char.pets}</a></li>
+        {/if}
+                                <li><a href="index.php?page=char&action=friends&id={$id}&amp;realm={$realmid}">{$lang_char.friends}</a></li>
+                                <li><a href="index.php?page=char&action=spell&id={$id}&amp;realm={$realmid}">{$lang_char.spells}</a></li>
+                                <li><a href="index.php?page=char&action=mail&id={$id}&amp;realm={$realmid}">{$lang_char.mail}</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab_content2">
+                            <font class="bold">
+                                {$char.name|escape:'html'} -
+                                <img src="img/c_icons/{$char.race}-{$char.gender}.gif" onmousemove="toolTip('{$char_additional.racename}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                <img src="img/c_icons/{$char.class}.gif" onmousemove="toolTip('{$char_additional.classname}', 'item_tooltip')" onmouseout="toolTip()" alt="" />
+                                - lvl {$char.level}
+                            </font>
+    {* end char header! *}
+                                        <br /><br />
+                                        <table class="lined" style="width: 550px;">
+                                            <tr>
+                                                <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.skills}</th>
+                                            </tr>
+                                            <tr>
+    {if $user_lvl}
+                                                <th><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}&amp;order_by=0&amp;dir={$dir}"{if $order_by eq 0} class="{$order_dir}"{/if}>{$lang_char.skill_id}</a></th>
+    {/if}
+                                                <th align="right"><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}&amp;order_by=1&amp;dir={$dir}"{if $order_by eq 1} class="{$order_dir}"{/if}>{$lang_char.skill_name}</a></th>
+                                                <th><a href="index.php?page=char&action=skill&id={$id}&amp;realm={$realmid}&amp;order_by=2&amp;dir={$dir}"{if $order_by eq 2} class="{$order_dir}"{/if}>{$lang_char.skill_value}</a></th>
+                                            </tr>
+    {foreach from=$skill_array item=skill}
+                                                <tr>
+                                                    {if $user_lvl}<td>{$skill[0]}</td>{/if}
+                                                    <td align="right">{$skill[1]}</td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: {$skill[4]}px;">
+                                                        <span>{$skill[2]}/{$skill[3]}</span>
+                                                    </td>
+                                                </tr>
+    {/foreach}
+    
+    {if $class_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.classskills}</th>
+                                                </tr>
+    {/if}
+                                                
+    {foreach from=$class_array item=class}
+                                                <tr>
+                                                    {if $user_lvl}<td>{$class[0]}</td>{/if}
+                                                    <td align="right"><a href="{$skill_datasite}7.{$char.class}.{$class[0]}" target="_blank">{$class[1]}</td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: 0px;">
+                                                    </td>
+                                                </tr>
+    {/foreach}
+
+
+    {if $prof_1_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.professions}</th>
+                                                </tr>
+    {/if}
+                                                
+    {foreach from=$prof_1_array item=prof_1}
+    {assign var=temp value=$prof_1[3]} 
+                                                <tr>
+                                                    {if $user_lvl}<td>{$class[0]}</td>{/if}
+                                                    <td align="right"><a href="{$skill_datasite}11.{$prof_1[0]}" target="_blank">{$prof_1[1]}</a></td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: {$prof_1[4]}px;">
+                                                        <span>{$prof_1[2]}/{$prof_1[3]} ({$skill_rank_array[$temp]})</span>
+                                                    </td>
+                                                </tr>
+    {/foreach}
+
+    {if $prof_2_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.secondaryskills}</th>
+                                                </tr>
+    {/if}
+
+    {foreach from=$prof_2_array item=prof_2}
+    {assign var=temp value=$prof_2[3]} 
+                                                <tr>
+                                                    {if $user_lvl}<td>{$prof_2[0]}</td>{/if}
+                                                    <td align="right"><a href="{$skill_datasite}9.{$prof_2[0]}" target="_blank">{$prof_2[1]}</a></td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: {$prof_2[4]}px;">
+                                                        <span>{$prof_2[2]}/{$prof_2[3]} ({$skill_rank_array[$temp]})</span>
+                                                    </td>
+                                                </tr>
+    {/foreach}
+
+    {if $weapon_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.weaponskills}</th>
+                                                </tr>
+    {/if}
+                                                
+    {foreach from=$weapon_array item=weapon}
+                                                <tr>
+                                                    {if $user_lvl}<td>{$weapon[0]}</td>{/if}
+                                                    <td align="right">{$weapon[1]}</td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: {$weapon[4]}px;">
+                                                        <span>{$weapon[2]}/{$weapon[3]}</span>
+                                                    </td>
+                                                </tr>
+    {/foreach}
+
+    {if $armor_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.armorproficiencies}</th>
+                                                </tr>
+    {/if}
+
+    {foreach from=$armor_array item=armor}
+                                                <tr>
+                                                    {if $user_lvl}<td>{$armor[0]}</td>{/if}
+                                                    <td align="right">{$armor[1]}</td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: 0px;">
+                                                    </td>
+                                                </tr>
+    {/foreach}
+
+    {if $language_array|@count gt 0}
+                                                <tr>
+                                                    <th class="title" colspan="{$title_colspan}" align="left">{$lang_char.languages}</th>
+                                                </tr>
+    {/if}
+                                                
+    {foreach from=$language_array item=language}
+                                                <tr>
+                                                    {if $user_lvl}<td>{$language[0]}</td>{/if}
+                                                    <td align="right">{$language[1]}</td>
+                                                    <td valign="center" class="bar skill_bar" style="background-position: {$language[4]}px;">
+                                                        <span>{$language[2]}/{$language[3]}</span>
+                                                    </td>
+                                                </tr>
+    {/foreach}
+                                            </table>
+                                            <br />
+                                        </div>
+                                        <br />
+                                    </div>
+                                    <br />
 {elseif $action eq ''}
 {/if}
 

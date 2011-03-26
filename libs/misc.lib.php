@@ -286,4 +286,18 @@ error_reporting(E_ALL);
         else
             return true;
     }
+    
+    //#############################################################################
+    function aasort(&$array, $field, $order = false)
+    {
+        if (is_string($field))
+            $field = "'$field'";
+        $order = ($order ? '<' : '>');
+        usort
+        (
+            $array,
+            create_function('$a, $b',
+            'return ($a['.$field.'] == $b['.$field.'] ? 0 :($a['.$field.'] '.$order.' $b['.$field.']) ? 1 : -1);')
+        );
+    }
 ?>
